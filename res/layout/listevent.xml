@@ -1,0 +1,34 @@
+<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+
+>
+
+	<TextView
+	    android:text="@+id/description" 
+	    android:id="@+id/title"
+	    android:layout_width="wrap_content"
+	    android:layout_weight="80"
+	    android:layout_height="55dip"
+	    android:layout_marginTop="5px"
+        android:layout_marginBottom="5px"
+        android:paddingLeft="5px"
+	    />
+	<View
+	android:id="@+id/separator"
+	android:layout_width="1dip"
+	android:layout_height="fill_parent"
+	android:background="#222222"
+	android:layout_marginBottom="5px"
+	android:layout_marginTop="5px"
+	android:layout_marginRight="10px"
+    android:layout_marginLeft="10px"
+
+	/>
+	<TextView
+	    android:text="@+id/location" 
+	    android:id="@+id/location"
+	    android:layout_width="78dip"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="5px"
+	    android:layout_marginBottom="5px"/>
+
+</LinearLayout>
