@@ -26,6 +26,13 @@
 	        android:background="#116db6"
 	        android:padding="5px"
 	        >
+	           <Button
+	               android:id="@+id/back"
+	               android:text="Back"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	           />
+	        
 	            <TextView
 		        android:id="@+id/title"
 		        android:text="@+id/title"

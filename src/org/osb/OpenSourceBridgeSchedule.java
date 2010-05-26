@@ -22,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -30,6 +31,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	
 	EventAdapter mAdapter;
 	ViewFlipper mFlipper;
+	Button mBack;
 	Animation mInLeft;
     Animation mInRight;
     Animation mOutLeft;
@@ -49,6 +51,7 @@ public class OpenSourceBridgeSchedule extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        mBack = (Button) findViewById(R.id.back);
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
@@ -64,6 +67,16 @@ public class OpenSourceBridgeSchedule extends Activity {
         mDescription = (TextView) detail.findViewById(R.id.description);
         
         loadSchedule();
+        
+        mBack.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mFlipper.setInAnimation(mInLeft);
+                mFlipper.setOutAnimation(mOutRight);
+                mFlipper.showPrevious();
+			}
+		});
     }
 
 	/**
