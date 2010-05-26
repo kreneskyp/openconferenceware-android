@@ -18,6 +18,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -37,7 +40,20 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final Date JUN3 = new Date(110, 5, 3);
 	private static final Date JUN4 = new Date(110, 5, 4);
 	
+	private static final int MENU_NOW = 0;
+	private static final int MENU_JUN1 = 1;
+	private static final int MENU_JUN2 = 2;
+	private static final int MENU_JUN3 = 3;
+	private static final int MENU_JUN4 = 4;
+	private static final int MENU_NEXT = 5;
+	private static final int MENU_PREV = 6;
+	
+	Date mCurrentDate;
+	boolean mDetail = false;
+	
 	EventAdapter mAdapter;
+	ListView mEvents;
+	
 	ViewFlipper mFlipper;
 	Button mBack;
 	Animation mInLeft;
@@ -80,17 +96,106 @@ public class OpenSourceBridgeSchedule extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				mFlipper.setInAnimation(mInLeft);
-                mFlipper.setOutAnimation(mOutRight);
-                mFlipper.showPrevious();
+				
 			}
 		});
     }
 
+	/* Creates the menu items */
+	public boolean onCreateOptionsMenu(Menu menu) {
+	   
+		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
+	    menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
+	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
+	    
+	    SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
+	    dayMenu.add(0, MENU_JUN1, 0, "Jun 1");
+	    dayMenu.add(0, MENU_JUN2, 0, "Jun 2");
+	    dayMenu.add(0, MENU_JUN3, 0, "Jun 3");
+	    dayMenu.add(0, MENU_JUN4, 0, "Jun 4");
+	    
+	    menu.add(0, MENU_NOW, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
+	    return true;
+	}
+
+	/* Handles item selections */
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    case MENU_NOW:
+	        now();
+	        return true;
+	    case MENU_JUN1:
+	    	setDay(JUN1);
+	        return true;
+    	case MENU_JUN2:
+    		setDay(JUN2);
+	        return true;
+		case MENU_JUN3:
+			setDay(JUN3);
+    		return true;
+		case MENU_JUN4:
+			setDay(JUN4);
+			return true;
+		case MENU_PREV:
+			return true;
+		case MENU_NEXT:
+			return true;
+	    }
+	    return false;
+	}
+	
+	/* sets the current day, filtering the list if need be */
+	public void setDay(Date date) {
+		if (isSameDay(mCurrentDate, date)) {
+			// same day, just jump to current time
+			mAdapter.now(date);
+		} else {
+			// different day, update the list
+			mCurrentDate = date;
+			mAdapter.filterDay(date);
+		} 
+		
+		// take user back to the listings if not already there 
+		showList();
+	}
+	
+	/**
+	 * Jumps the user to right now in the event list:
+	 * 
+	 *    - if its before or after the conference, it shows the beginning
+	 *      of day 1
+	 *    - if its during the conference it will show the first event 
+	 *      currently underway
+	 */
+	public void now(){
+		Date now = new Date();
+		if (now.before(JUN1) || now.after(JUN4)) {
+			setDay(JUN1);
+		} else {
+			// use now, since it will have the time of day for 
+			// jumping to the right time
+			setDay(now);
+		}
+	}
+	
+	/**
+	 * Shows the event listing
+	 */
+	public void showList() {
+		if (mDetail) {
+			mFlipper.setInAnimation(mInLeft);
+            mFlipper.setOutAnimation(mOutRight);
+            mFlipper.showPrevious();
+            mDetail=false;
+		}
+	}
+	
 	/**
 	 * Loads the osbridge schedule from a combination of ICal and json data
 	 */
 	private void loadSchedule() {
+		//XXX set date to a day that is definitely, not now.  This will cause it to update the list immediately.
+		mCurrentDate = new Date(1900, 0, 0);
 		InputStream is = null;
         URLConnection conn = null;
 		try {
@@ -102,10 +207,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 
 			ICal calendar = new ICal(is);
 			
-			ListView events = (ListView) findViewById(R.id.events);
+			mEvents = (ListView) findViewById(R.id.events);
 			mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
-	        events.setAdapter(mAdapter);
-			events.setOnItemClickListener(new ListView.OnItemClickListener() {
+	        mEvents.setAdapter(mAdapter);
+			mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
 					Event event = (Event) adapterview.getAdapter().getItem(position);
 					mTitle.setText(event.title);
@@ -118,13 +223,15 @@ public class OpenSourceBridgeSchedule extends Activity {
 					mFlipper.setInAnimation(mInRight);
                     mFlipper.setOutAnimation(mOutLeft);
                     mFlipper.showNext();
+                    mDetail = true;
 				}
 			});
             
 			// parse the proposals json to get additional fields
 			parseProposals(calendar);
 			
-						
+			// always set the initial state to "now"
+			now();
         } catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -200,7 +307,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 
 		/**
 		 * Filters the list to contain only events for the given date.
-		 * @param date
+		 * @param date - date to filter by
 		 */
 		public void filterDay(Date date){
 			ArrayList<Event> items = mItems;
@@ -214,6 +321,23 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}
 			mFiltered = filtered; 
 			notifyDataSetChanged();
+			now(date);
+		}
+		
+		/**
+		 * sets the position to the current time
+		 * @param date
+		 */
+		public void now(Date date) {
+			ArrayList<Event> filtered = mFiltered;
+			int size = filtered.size();
+			for (int i=0; i<size; i++){
+				Event event = filtered.get(i);
+				if (event.end.after(date)) {
+					mEvents.setSelection(i);
+					return;
+				}
+			}
 		}
 		
 		public int getCount(){
@@ -247,6 +371,12 @@ public class OpenSourceBridgeSchedule extends Activity {
 		}
 	}
 	
+	/**
+	 * Checks if two dates are the same day
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
 	public static boolean isSameDay(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
             throw new IllegalArgumentException("The date must not be null");
@@ -258,7 +388,12 @@ public class OpenSourceBridgeSchedule extends Activity {
         return isSameDay(cal1, cal2);
     }
  
- 
+	/**
+	 * Checks if two calendars are the same day
+	 * @param cal1
+	 * @param cal2
+	 * @return
+	 */
 	public static boolean isSameDay(Calendar cal1, Calendar cal2) {
         if (cal1 == null || cal2 == null) {
             throw new IllegalArgumentException("The date must not be null");
