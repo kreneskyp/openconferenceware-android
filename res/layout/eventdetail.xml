@@ -7,7 +7,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         >
             <LinearLayout 
-            android:id="@+id/detail"
+            android:id="@+id/detail_header"
             android:layout_width="fill_parent" 
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -32,6 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#fff"
+                android:textSize="16dip"
+                android:textStyle="bold"
                 />
                 <LinearLayout 
                 android:id="@+id/detail"
@@ -44,16 +46,19 @@
                     android:layout_width="wrap_content"
                     android:layout_weight="80"
                     android:layout_height="wrap_content"
+                    android:textColor="#000"
                     />
                     <TextView
                     android:id="@+id/location"
                     android:layout_width="78dip"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
+                    android:textColor="#000"
                     />
                 </LinearLayout>
             </LinearLayout>
             <View
+                android:id="@+id/detail_header_highlight"
                 android:layout_width="fill_parent" 
                 android:layout_height="5dip"
                 android:background="#13558A"

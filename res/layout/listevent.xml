@@ -7,6 +7,7 @@
 	    android:layout_marginTop="5px"
         android:layout_marginBottom="5px"
         android:paddingLeft="5px"
+        android:textColor="#FFF"
 	    />
 	<View
 	android:id="@+id/separator"
@@ -39,7 +40,12 @@
 		    android:layout_height="wrap_content"
 		    android:layout_marginTop="5px"
 		    android:layout_marginBottom="5px"/>
-		    
+	   <TextView
+            android:id="@+id/track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5px"
+            android:layout_marginBottom="5px"/>
 	    
     </LinearLayout>
 

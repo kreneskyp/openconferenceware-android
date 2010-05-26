@@ -67,10 +67,14 @@ public class OpenSourceBridgeSchedule extends Activity {
     Animation mOutLeft;
     Animation mOutRight;
 	
+    View mHeader;
+    View mHeaderHighlight;
     TextView mTitle;
     TextView mTime;
     TextView mLocation;
     TextView mDescription;
+    
+    
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.ics";
     
@@ -92,7 +96,9 @@ public class OpenSourceBridgeSchedule extends Activity {
         mOutRight = AnimationUtils.loadAnimation(context, R.anim.slide_out_right);
         
         // grab views for details
-        View detail = findViewById(R.id.detail); 
+        View detail = findViewById(R.id.detail);
+        mHeader = findViewById(R.id.detail_header);
+        mHeaderHighlight = findViewById(R.id.detail_header_highlight);
         mTitle = (TextView) detail.findViewById(R.id.title);
         mTime = (TextView) detail.findViewById(R.id.time);
         mLocation = (TextView) detail.findViewById(R.id.location);
@@ -264,6 +270,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 			mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
 					Event event = (Event) adapterview.getAdapter().getItem(position);
+					Context context = getApplicationContext();
+					mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
+					mHeaderHighlight.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 					mTitle.setText(event.title);
 					mLocation.setText(event.location);
 					DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -436,6 +445,12 @@ public class OpenSourceBridgeSchedule extends Activity {
 				if (time != null) {
 					DateFormat formatter = new SimpleDateFormat("h:mm");
 					time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
+				}
+				if (e.track != -1) {
+					Context context = getApplicationContext();
+					TextView track = (TextView) v.findViewById(R.id.track);
+					track.setTextColor(context.getResources().getColor(e.getTrackColor()));
+					track.setText(e.getTrackName());
 				}
 			}
 			return v;
