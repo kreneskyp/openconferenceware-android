@@ -23,6 +23,8 @@ public class ICal {
 	private String mName, mVersion, mProdid, mCalscale;
 	private ArrayList<Event> mEvents; 
 	
+	public ICal() {}
+	
 	public ICal(InputStream is){
 		mEvents = new ArrayList<Event>();
 		Event event = null;
@@ -96,5 +98,9 @@ public class ICal {
 	
 	public ArrayList<Event> getEvents(){
 		return mEvents;
+	}
+	
+	public void setEvents(ArrayList<Event> events){
+		mEvents = events;
 	}
 }

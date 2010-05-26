@@ -10,6 +10,7 @@ public class Event {
 	public String location;
 	public String brief;
 	public String id;
+	public int track;
 	
 	public Event(){
 		start = null;
@@ -18,7 +19,13 @@ public class Event {
 		title = null;
 		url = null;
 		location = null;
+		track = 0;
 	}
 	
-	
+	public String getTrackColor() {
+		switch(track) {
+		default:
+			return "#FFF";
+		}
+	}
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -42,7 +43,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final Date JUN2 = new Date(110, 5, 2);
 	private static final Date JUN3 = new Date(110, 5, 3);
 	private static final Date JUN4 = new Date(110, 5, 4);
-	
+
 	private static final int MENU_NOW = 0;
 	private static final int MENU_JUN1 = 1;
 	private static final int MENU_JUN2 = 2;
@@ -247,15 +248,16 @@ public class OpenSourceBridgeSchedule extends Activity {
 		InputStream is = null;
         URLConnection conn = null;
 		try {
-			URL url = new URL(SCHEDULE_URI);
+			/*URL url = new URL(SCHEDULE_URI);
 		    conn = url.openConnection(); 
 		    conn.setDoInput(true); 
 		    conn.setUseCaches(false);
 			is = conn.getInputStream();
-
-			ICal calendar = new ICal(is);
-			// parse the proposals json to get additional fields
+			*/
+			
+			ICal calendar = new ICal();
 			parseProposals(calendar);
+			// parse the proposals json to get additional fields*/
 			
 			mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
 	        mEvents.setAdapter(mAdapter);
@@ -292,35 +294,46 @@ public class OpenSourceBridgeSchedule extends Activity {
 	}
 
 	/**
-	 * Update calendar with data from proposals.json.  This is done because proposals
-	 * contains talks that weren't accepted, and doesn't include the schedule.
-	 * the ical doesn't include the long description and other fields.
+	 * parse events from json file and update the given calendar
 	 * @param calendar
-	 * @return
 	 */
 	private void parseProposals(ICal calendar){
 		InputStream is;
 		
-		is = getResources().openRawResource(R.raw.proposals_dict);
+		is = getResources().openRawResource(R.raw.schedule);
 		String line;
 		StringBuilder sb = new StringBuilder();
-		
+		ArrayList<Event> events = new ArrayList<Event>();
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
 			}	
-			JSONObject json = new JSONObject(sb.toString());
-			ArrayList<Event> events = calendar.getEvents();
-			int size = events.size();
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
+			JSONObject schedule = new JSONObject(sb.toString());
+			JSONArray json_events = schedule.getJSONArray("items");
+			int size = json_events.length();
 			for(int i=0; i<size; i++){
-				Event event = events.get(i);
-				if (json.has(event.id)){
-					JSONObject json_event = json.getJSONObject(event.id);
-					event.description = json_event.getString("description")
-											.replace("\r","");
+				JSONObject json = json_events.getJSONObject(i);
+				Event event = new Event();
+				
+				event.id = json.getString("event_id");
+				event.title = json.getString("title");
+				event.description = json.getString("description").replace("\r","");
+				event.start = formatter.parse(json.getString("start_time"));
+				event.end = formatter.parse(json.getString("end_time"));
+				event.location = json.getString("room_title");
+				if (event.location == "null"){
+					event.location = "";
 				}
+				if (json.has("track_id")){
+					event.track = json.getInt("track_id");
+				} else {
+					event.track = -1;
+				}
+				events.add(event);
 			}
+			calendar.setEvents(events);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
