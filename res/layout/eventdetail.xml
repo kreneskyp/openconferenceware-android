@@ -3,7 +3,7 @@
         android:layout_width="fill_parent" 
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:background="#191919"
+        android:background="#171717"
         xmlns:android="http://schemas.android.com/apk/res/android"
         >
             <LinearLayout 
@@ -65,7 +65,7 @@
                     android:id="@+id/description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#191919"
+                    android:background="#171717"
                     android:padding="5px"
                     />
                     <LinearLayout 
@@ -73,8 +73,8 @@
                     android:layout_width="fill_parent" 
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:background="#191919"
-                    android:paddingTop="10px"
+                    android:background="#171717"
+                    android:paddingTop="20px"
                     android:gravity="center_horizontal"
                     >
                     <ImageView
