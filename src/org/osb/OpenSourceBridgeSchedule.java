@@ -61,7 +61,6 @@ public class OpenSourceBridgeSchedule extends Activity {
 	ListView mEvents;
 	
 	ViewFlipper mFlipper;
-	Button mBack;
 	Animation mInLeft;
     Animation mInRight;
     Animation mOutLeft;
@@ -87,7 +86,6 @@ public class OpenSourceBridgeSchedule extends Activity {
         
         mDate = (TextView) findViewById(R.id.date);
         mEvents = (ListView) findViewById(R.id.events);
-        mBack = (Button) findViewById(R.id.back);
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
@@ -105,13 +103,6 @@ public class OpenSourceBridgeSchedule extends Activity {
         mDescription = (TextView) detail.findViewById(R.id.description);
         
         loadSchedule();
-        
-        mBack.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showList();
-			}
-		});
     }
 
 	/**
@@ -120,6 +111,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent  event){
 		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
 			showList();
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
