@@ -5,14 +5,14 @@
 <color name="track_cooking">#F5B400</color>
 <color name="track_culture">#0BACD9</color>
 <color name="track_hacks">#AA34D9</color>
-<color name="track_other">#FFFFFF</color>
+<color name="track_other">#aaa</color>
 
 <color name="track_business_dark">#21b340</color>
 <color name="track_chemistry_dark">#b92323</color>
 <color name="track_cooking_dark">#d39b00</color>
 <color name="track_culture_dark">#0986a9</color>
 <color name="track_hacks_dark">#8d22b8</color>
-<color name="track_other_dark">#ddd</color>
+<color name="track_other_dark">#777</color>
 
 
 
