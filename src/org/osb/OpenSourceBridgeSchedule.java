@@ -111,10 +111,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
 	    
 	    SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
-	    dayMenu.add(0, MENU_JUN1, 0, "Jun 1");
-	    dayMenu.add(0, MENU_JUN2, 0, "Jun 2");
-	    dayMenu.add(0, MENU_JUN3, 0, "Jun 3");
-	    dayMenu.add(0, MENU_JUN4, 0, "Jun 4");
+	    dayMenu.add(0, MENU_JUN1, 0, "June 1");
+	    dayMenu.add(0, MENU_JUN2, 0, "June 2");
+	    dayMenu.add(0, MENU_JUN3, 0, "June 3");
+	    dayMenu.add(0, MENU_JUN4, 0, "June 4");
 	    
 	    menu.add(0, MENU_NOW, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
@@ -247,8 +247,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 					Event event = (Event) adapterview.getAdapter().getItem(position);
 					mTitle.setText(event.title);
 					mLocation.setText(event.location);
-					DateFormat startFormat = new SimpleDateFormat("E, H:mm");
-					DateFormat endFormat = new SimpleDateFormat("H:mm a");
+					DateFormat startFormat = new SimpleDateFormat("E, h:mm");
+					DateFormat endFormat = new SimpleDateFormat("h:mm a");
 					String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 					mTime.setText(timeString);
 					mDescription.setText(event.description);
@@ -395,7 +395,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 					location.setText(e.location);
 				}
 				if (time != null) {
-					DateFormat formatter = new SimpleDateFormat("H:mm");
+					DateFormat formatter = new SimpleDateFormat("h:mm");
 					time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
 				}
 			}
