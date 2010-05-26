@@ -9,6 +9,8 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.json.JSONObject;
 
@@ -27,7 +29,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+
 public class OpenSourceBridgeSchedule extends Activity {
+
+	private static final Date JUN1 = new Date(110, 5, 1);
+	private static final Date JUN2 = new Date(110, 5, 2);
+	private static final Date JUN3 = new Date(110, 5, 3);
+	private static final Date JUN4 = new Date(110, 5, 4);
 	
 	EventAdapter mAdapter;
 	ViewFlipper mFlipper;
@@ -151,7 +159,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}	
 			JSONObject json = new JSONObject(sb.toString());
 			ArrayList<Event> events = calendar.getEvents();
-			for(int i=0; i<events.size(); i++){
+			int size = events.size();
+			for(int i=0; i<size; i++){
 				Event event = events.get(i);
 				if (json.has(event.id)){
 					JSONObject json_event = json.getJSONObject(event.id);
@@ -173,26 +182,52 @@ public class OpenSourceBridgeSchedule extends Activity {
 		}
 	}
 	
+	
 	/**
 	 * EventAdapter used for displaying a list of events
 	 *
 	 */
 	private class EventAdapter extends ArrayAdapter<Event> {
-		private ArrayList<Event> items;
-
+		private ArrayList<Event> mItems;
+		private ArrayList<Event> mFiltered;
+		
 		public EventAdapter(Context context, int textViewResourceId,
 				ArrayList<Event> items) {
 			super(context, textViewResourceId, items);
-			this.items = items;
+			this.mItems = items;
+			filterDay(JUN1);
 		}
 
+		/**
+		 * Filters the list to contain only events for the given date.
+		 * @param date
+		 */
+		public void filterDay(Date date){
+			ArrayList<Event> items = mItems;
+			ArrayList<Event> filtered = new ArrayList<Event>();
+			int size = mItems.size();
+			for (int i=0; i<size; i++){
+				Event event = items.get(i);
+				if(isSameDay(date, event.start)){
+					filtered.add(event);
+				}
+			}
+			mFiltered = filtered; 
+			notifyDataSetChanged();
+		}
+		
+		public int getCount(){
+			return mFiltered.size();
+		}
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.listevent, null);
 			}
-			Event e = items.get(position);
+			
+			Event e = mFiltered.get(position);
 			if (e != null) {
 				TextView title = (TextView) v.findViewById(R.id.title);
 				TextView location = (TextView) v.findViewById(R.id.location);
@@ -211,4 +246,26 @@ public class OpenSourceBridgeSchedule extends Activity {
 			return v;
 		}
 	}
+	
+	public static boolean isSameDay(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+        return isSameDay(cal1, cal2);
+    }
+ 
+ 
+	public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+    }
+	
 }
