@@ -6,12 +6,42 @@
        xmlns:android="http://schemas.android.com/apk/res/android"
        android:background="#191919"
     >
-    <ListView
-    android:id="@+id/events"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#000"
-    />
+    
+    <LinearLayout 
+     android:layout_width="fill_parent" 
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:background="#116db6"
+     >
+                         
+          <LinearLayout 
+	     android:layout_width="fill_parent" 
+	     android:layout_height="35dip"
+	     android:orientation="vertical"
+	     android:background="#116db6"
+	     android:padding="5px"
+	     >
+		     <TextView
+	          android:id="@+id/date"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:textColor="#fff"
+	          android:textSize="18dip"
+	          />
+	    </LinearLayout>
+        <View
+           android:layout_width="fill_parent" 
+           android:layout_height="5dip"
+           android:background="#13558A"
+           />
+	    <ListView
+	    android:id="@+id/events"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:background="#000"
+	    />
+    </LinearLayout>
+    
         <LinearLayout 
         android:id="@+id/detail"
         android:layout_width="fill_parent" 

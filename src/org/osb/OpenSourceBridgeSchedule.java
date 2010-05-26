@@ -49,6 +49,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final int MENU_PREV = 6;
 	
 	Date mCurrentDate;
+	TextView mDate;
 	boolean mDetail = false;
 	
 	EventAdapter mAdapter;
@@ -75,6 +76,8 @@ public class OpenSourceBridgeSchedule extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);       
         
+        mDate = (TextView) findViewById(R.id.date);
+        mEvents = (ListView) findViewById(R.id.events);
         mBack = (Button) findViewById(R.id.back);
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         Context context = getApplicationContext();
@@ -93,10 +96,9 @@ public class OpenSourceBridgeSchedule extends Activity {
         loadSchedule();
         
         mBack.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				
+				showList();
 			}
 		});
     }
@@ -153,6 +155,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 			// different day, update the list
 			mCurrentDate = date;
 			mAdapter.filterDay(date);
+			DateFormat formatter = new SimpleDateFormat("E, MMMM d");
+			mDate.setText(formatter.format(mCurrentDate));
 		} 
 		
 		// take user back to the listings if not already there 
@@ -207,7 +211,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 
 			ICal calendar = new ICal(is);
 			
-			mEvents = (ListView) findViewById(R.id.events);
+			
 			mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
 	        mEvents.setAdapter(mAdapter);
 			mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -363,7 +367,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 					location.setText(e.location);
 				}
 				if (time != null) {
-					DateFormat formatter = new SimpleDateFormat("HH:mm");
+					DateFormat formatter = new SimpleDateFormat("H:mm");
 					time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
 				}
 			}
