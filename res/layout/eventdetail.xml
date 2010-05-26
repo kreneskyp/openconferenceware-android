@@ -16,15 +16,15 @@
             >
                <Button
                    android:id="@+id/back"
-                   android:layout_width="50dip"
-                   android:layout_height="50dip"
-                   android:background="@drawable/ic_input_delete"
+                   android:layout_width="59px"
+                   android:layout_height="26px"
+                   android:background="@drawable/back"
                />
-               
                <ImageView 
                     src="@android:drawable/ic_input_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+                     
                      
                 <TextView
                 android:id="@+id/title"
