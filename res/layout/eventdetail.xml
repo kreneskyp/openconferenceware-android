@@ -16,8 +16,8 @@
             >
                <Button
                    android:id="@+id/back"
-                   android:layout_width="59px"
-                   android:layout_height="26px"
+                   android:layout_width="78px"
+                   android:layout_height="35px"
                    android:background="@drawable/back"
                />
                <ImageView 

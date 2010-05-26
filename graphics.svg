@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="graphics.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -157,16 +157,16 @@
        id="rect3666"
        sodipodi:nodetypes="cccccccccc"
        inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/back.png"
-       inkscape:export-xdpi="40.947433"
-       inkscape:export-ydpi="40.947433" />
+       inkscape:export-xdpi="54.326153"
+       inkscape:export-ydpi="54.326153" />
     <path
        style="fill:#000000;fill-opacity:0.07981221;stroke:none"
        d="m 323.48689,576.94447 0,20.095 c 0,3.5738 -2.8771,6.4509 -6.45089,6.4509 l -101.16272,0 -15.80098,-22.57093 c -1.00872,-1.07581 -1.65843,-2.56557 -1.7311,-4.11591 l 125.14569,0.14094 z"
        id="rect3666-9"
        sodipodi:nodetypes="ccccccc"
        inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/back.png"
-       inkscape:export-xdpi="40.947433"
-       inkscape:export-ydpi="40.947433" />
+       inkscape:export-xdpi="54.326153"
+       inkscape:export-ydpi="54.326153" />
     <text
        xml:space="preserve"
        style="font-size:28.57469559px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#e6e6e6;fill-opacity:1;stroke:none;font-family:Harabara;-inkscape-font-specification:Harabara Bold"
@@ -174,8 +174,8 @@
        y="585.58521"
        id="text3669"
        inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/back.png"
-       inkscape:export-xdpi="40.947433"
-       inkscape:export-ydpi="40.947433"><tspan
+       inkscape:export-xdpi="54.326153"
+       inkscape:export-ydpi="54.326153"><tspan
          sodipodi:role="line"
          id="tspan3671"
          x="234.46558"
@@ -187,8 +187,8 @@
        id="rect3666-3"
        sodipodi:nodetypes="cccccccccc"
        inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/back.png"
-       inkscape:export-xdpi="40.947433"
-       inkscape:export-ydpi="40.947433"
+       inkscape:export-xdpi="54.326153"
+       inkscape:export-ydpi="54.326153"
        transform="matrix(0.96542438,0,0,0.96542438,7.0565661,19.950879)" />
   </g>
 </svg>
