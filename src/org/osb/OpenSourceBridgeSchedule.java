@@ -397,12 +397,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 			ArrayList<Event> items = mItems;
 			ArrayList<Object> filtered = new ArrayList<Object>();
 			int size = mItems.size();
-			Date currentStart = items.get(0).start;
-			filtered.add(currentStart);
+			Date currentStart = null;
 			for (int i=0; i<size; i++){
 				Event event = items.get(i);
 				if(isSameDay(date, event.start)){
-					if(event.start.after(currentStart)) {
+					if(currentStart == null || event.start.after(currentStart)) {
 						currentStart = event.start;
 						filtered.add(currentStart);
 					}
