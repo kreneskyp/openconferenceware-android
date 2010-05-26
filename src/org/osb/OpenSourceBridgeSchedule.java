@@ -131,10 +131,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
 	    
 	    SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
-	    dayMenu.add(0, MENU_JUN1, 0, "June 1");
-	    dayMenu.add(0, MENU_JUN2, 0, "June 2");
-	    dayMenu.add(0, MENU_JUN3, 0, "June 3");
-	    dayMenu.add(0, MENU_JUN4, 0, "June 4");
+	    dayMenu.add(0, MENU_JUN1, 0, "Tuesday, June 1");
+	    dayMenu.add(0, MENU_JUN2, 0, "Wednesday, June 2");
+	    dayMenu.add(0, MENU_JUN3, 0, "Thursday, June 3");
+	    dayMenu.add(0, MENU_JUN4, 0, "Friday, June 4");
 	    
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
@@ -269,7 +269,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 	        mEvents.setAdapter(mAdapter);
 			mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 				public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
-					Event event = (Event) adapterview.getAdapter().getItem(position);
+					Object item = mAdapter.mFiltered.get(position);
+					if (item instanceof Date) {
+						return;// ignore clicks on the dates
+					}
+					Event event = (Event) item;
 					Context context = getApplicationContext();
 					mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
 					mHeaderHighlight.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
@@ -376,7 +380,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 */
 	private class EventAdapter extends ArrayAdapter<Event> {
 		private ArrayList<Event> mItems;
-		private ArrayList<Event> mFiltered;
+		private ArrayList<Object> mFiltered;
 		
 		public EventAdapter(Context context, int textViewResourceId,
 				ArrayList<Event> items) {
@@ -391,11 +395,17 @@ public class OpenSourceBridgeSchedule extends Activity {
 		 */
 		public void filterDay(Date date){
 			ArrayList<Event> items = mItems;
-			ArrayList<Event> filtered = new ArrayList<Event>();
+			ArrayList<Object> filtered = new ArrayList<Object>();
 			int size = mItems.size();
+			Date currentStart = items.get(0).start;
+			filtered.add(currentStart);
 			for (int i=0; i<size; i++){
 				Event event = items.get(i);
 				if(isSameDay(date, event.start)){
+					if(event.start.after(currentStart)) {
+						currentStart = event.start;
+						filtered.add(currentStart);
+					}
 					filtered.add(event);
 				}
 			}
@@ -409,13 +419,22 @@ public class OpenSourceBridgeSchedule extends Activity {
 		 * @param date
 		 */
 		public void now(Date date) {
-			ArrayList<Event> filtered = mFiltered;
+			ArrayList<Object> filtered = mFiltered;
 			int size = filtered.size();
 			for (int i=0; i<size; i++){
-				Event event = filtered.get(i);
-				if (event.end.after(date)) {
-					mEvents.setSelection(i);
-					return;
+				Object item = filtered.get(i);
+				if (item instanceof Date ){
+					Date slot = (Date) item;
+					if (date.before(slot)) {
+						mEvents.setSelection(i);
+						return;
+					}
+				} else {
+					Event event = (Event) item;
+					if (event.end.after(date)) {
+						mEvents.setSelection(i);
+						return;
+					}
 				}
 			}
 		}
@@ -426,31 +445,38 @@ public class OpenSourceBridgeSchedule extends Activity {
 		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.listevent, null);
-			}
+			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			
-			Event e = mFiltered.get(position);
-			if (e != null) {
-				TextView title = (TextView) v.findViewById(R.id.title);
-				TextView location = (TextView) v.findViewById(R.id.location);
+			Object item = mFiltered.get(position);
+			if (item instanceof Date) {
+				Date date = (Date)item;
+				v = vi.inflate(R.layout.list_slot, null);
 				TextView time = (TextView) v.findViewById(R.id.time);
-				if (title != null) {
-					title.setText(e.title);
-				}
-				if (location != null) {
-					location.setText(e.location);
-				}
-				if (time != null) {
-					DateFormat formatter = new SimpleDateFormat("h:mm");
-					time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
-				}
-				if (e.track != -1) {
-					Context context = getApplicationContext();
-					TextView track = (TextView) v.findViewById(R.id.track);
-					track.setTextColor(context.getResources().getColor(e.getTrackColor()));
-					track.setText(e.getTrackName());
+				DateFormat formatter = new SimpleDateFormat("h:mm a");
+				time.setText(formatter.format(date));
+			} else {
+				Event e = (Event) item;
+				v = vi.inflate(R.layout.listevent, null);
+				if (e != null) {
+					TextView title = (TextView) v.findViewById(R.id.title);
+					TextView location = (TextView) v.findViewById(R.id.location);
+					TextView time = (TextView) v.findViewById(R.id.time);
+					if (title != null) {
+						title.setText(e.title);
+					}
+					if (location != null) {
+						location.setText(e.location);
+					}
+					if (time != null) {
+						DateFormat formatter = new SimpleDateFormat("h:mm");
+						time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
+					}
+					if (e.track != -1) {
+						Context context = getApplicationContext();
+						TextView track = (TextView) v.findViewById(R.id.track);
+						track.setTextColor(context.getResources().getColor(e.getTrackColor()));
+						track.setText(e.getTrackName());
+					}
 				}
 			}
 			return v;
