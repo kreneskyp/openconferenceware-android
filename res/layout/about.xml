@@ -1,0 +1,37 @@
+<LinearLayout 
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent" 
+	android:padding="5dip"
+	android:orientation="vertical"
+	android:gravity="center"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	
+	<ImageView
+	   android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+	   android:src="@drawable/icon_footer"
+	   android:layout_marginTop="5px"/>
+	
+    <TextView 
+        android:text="@string/about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5px"
+        android:layout_marginBottom="5px"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/osl"
+        android:layout_marginTop="25px" />
+
+    <TextView 
+        android:text="@string/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5px"
+        android:layout_marginBottom="5px"
+        />
+
+</LinearLayout>

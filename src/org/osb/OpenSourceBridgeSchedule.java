@@ -15,6 +15,8 @@ import java.util.Date;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,6 +49,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final int MENU_JUN4 = 4;
 	private static final int MENU_NEXT = 5;
 	private static final int MENU_PREV = 6;
+	private static final int MENU_ABOUT = 7;
 	
 	Date mCurrentDate;
 	TextView mDate;
@@ -116,7 +119,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	    dayMenu.add(0, MENU_JUN3, 0, "June 3");
 	    dayMenu.add(0, MENU_JUN4, 0, "June 4");
 	    
-	    menu.add(0, MENU_NOW, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
+	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
 	}
 
@@ -143,6 +146,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 			return true;
 		case MENU_NEXT:
 			next();
+			return true;
+		case MENU_ABOUT:
+			showDialog(0);
 			return true;
 	    }
 	    return false;
@@ -321,6 +327,18 @@ public class OpenSourceBridgeSchedule extends Activity {
 		}
 	}
 	
+	protected Dialog onCreateDialog(int id){
+        Context context = getApplicationContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.about, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("About");
+        builder.setCancelable(true);
+        builder.setView(v);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        final AlertDialog alert = builder.create();
+        return alert;
+    }	
 	
 	/**
 	 * EventAdapter used for displaying a list of events
