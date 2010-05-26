@@ -139,8 +139,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 			setDay(JUN4);
 			return true;
 		case MENU_PREV:
+			previous();
 			return true;
 		case MENU_NEXT:
+			next();
 			return true;
 	    }
 	    return false;
@@ -179,6 +181,32 @@ public class OpenSourceBridgeSchedule extends Activity {
 			// use now, since it will have the time of day for 
 			// jumping to the right time
 			setDay(now);
+		}
+	}
+	
+	/**
+	 * Jumps to the next day, if not already at the end
+	 */
+	public void next() {
+		if (isSameDay(mCurrentDate, JUN1)) {
+			setDay(JUN2);
+		} else if (isSameDay(mCurrentDate, JUN2)) {
+			setDay(JUN3);
+		} else if (isSameDay(mCurrentDate, JUN3)) {
+			setDay(JUN4);
+		}
+	}
+	
+	/**
+	 * Jumps to the previous day if now already at the beginning
+	 */
+	public void previous() {
+		if (isSameDay(mCurrentDate, JUN4)) {
+			setDay(JUN3);
+		} else if (isSameDay(mCurrentDate, JUN3)) {
+			setDay(JUN2);
+		} else if (isSameDay(mCurrentDate, JUN2)) {
+			setDay(JUN1);
 		}
 	}
 	
