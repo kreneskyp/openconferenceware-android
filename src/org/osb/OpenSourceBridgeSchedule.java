@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,9 +107,18 @@ public class OpenSourceBridgeSchedule extends Activity {
 		});
     }
 
+	/**
+	 * overridden to hook back button when on the detail page
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent  event){
+		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
+			showList();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
-	   
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
 	    menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
@@ -244,7 +254,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 			is = conn.getInputStream();
 
 			ICal calendar = new ICal(is);
-			
+			// parse the proposals json to get additional fields
+			parseProposals(calendar);
 			
 			mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
 	        mEvents.setAdapter(mAdapter);
@@ -264,9 +275,6 @@ public class OpenSourceBridgeSchedule extends Activity {
                     mDetail = true;
 				}
 			});
-            
-			// parse the proposals json to get additional fields
-			parseProposals(calendar);
 			
 			// always set the initial state to "now"
 			now();
