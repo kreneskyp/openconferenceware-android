@@ -1,9 +1,5 @@
-<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
-
->
-
-	<TextView
-	    android:text="@+id/description" 
+<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+	<TextView 
 	    android:id="@+id/title"
 	    android:layout_width="wrap_content"
 	    android:layout_weight="80"
@@ -23,12 +19,26 @@
     android:layout_marginLeft="10px"
 
 	/>
-	<TextView
-	    android:text="@+id/location" 
-	    android:id="@+id/location"
-	    android:layout_width="78dip"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="5px"
-	    android:layout_marginBottom="5px"/>
+	
+	<LinearLayout 
+		android:layout_width="78dip"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="5px"
+		android:layout_marginBottom="5px"
+		android:orientation="vertical">
+	
+		<TextView
+		    android:id="@+id/location"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginTop="5px"
+		    android:layout_marginBottom="5px"/>
+		    
+	    <TextView
+	        android:id="@+id/time"
+	        android:layout_width="78dip"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="5px"/>
+    </LinearLayout>
 
 </LinearLayout>

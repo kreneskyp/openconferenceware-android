@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -39,7 +38,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     TextView mTitle;
     TextView mTime;
     TextView mLocation;
-    WebView mDescription;
+    TextView mDescription;
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.ics";
     
@@ -49,7 +48,6 @@ public class OpenSourceBridgeSchedule extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
         
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         Context context = getApplicationContext();
@@ -63,11 +61,16 @@ public class OpenSourceBridgeSchedule extends Activity {
         mTitle = (TextView) detail.findViewById(R.id.title);
         mTime = (TextView) detail.findViewById(R.id.time);
         mLocation = (TextView) detail.findViewById(R.id.location);
-        mDescription = (WebView) detail.findViewById(R.id.description);
+        mDescription = (TextView) detail.findViewById(R.id.description);
         
-        
-        
-        InputStream is = null;
+        loadSchedule();
+    }
+
+	/**
+	 * Loads the osbridge schedule from a combination of ICal and json data
+	 */
+	private void loadSchedule() {
+		InputStream is = null;
         URLConnection conn = null;
 		try {
 			URL url = new URL(SCHEDULE_URI);
@@ -86,10 +89,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 					Event event = (Event) adapterview.getAdapter().getItem(position);
 					mTitle.setText(event.title);
 					mLocation.setText(event.location);
-					DateFormat formatter = new SimpleDateFormat("HH:mm");
-					String timeString = formatter.format(event.start) + " - " + formatter.format(event.end);
+					DateFormat startFormat = new SimpleDateFormat("E, H:mm");
+					DateFormat endFormat = new SimpleDateFormat("H:mm a");
+					String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 					mTime.setText(timeString);
-					mDescription.loadData(event.description, "text/html", "UTF-8");
+					mDescription.setText(event.description);
 					mFlipper.setInAnimation(mInRight);
                     mFlipper.setOutAnimation(mOutLeft);
                     mFlipper.showNext();
@@ -97,7 +101,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 			});
             
 			// parse the proposals json to get additional fields
-			ParseProposals(calendar);
+			parseProposals(calendar);
 			
 						
         } catch (Exception e) {
@@ -111,15 +115,16 @@ public class OpenSourceBridgeSchedule extends Activity {
 				}
 			}
 		}
-    }
+	}
 
 	/**
-	 * Update calendar with data from proposals.json
+	 * Update calendar with data from proposals.json.  This is done because proposals
+	 * contains talks that weren't accepted, and doesn't include the schedule.
+	 * the ical doesn't include the long description and other fields.
 	 * @param calendar
 	 * @return
 	 */
-	private void ParseProposals(ICal calendar){
-		
+	private void parseProposals(ICal calendar){
 		InputStream is;
 		
 		is = getResources().openRawResource(R.raw.proposals_dict);
@@ -138,7 +143,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				if (json.has(event.id)){
 					JSONObject json_event = json.getJSONObject(event.id);
 					event.description = json_event.getString("description")
-											.replace("\r\n","<br/>");
+											.replace("\r","");
 				}
 			}
 			
@@ -178,13 +183,16 @@ public class OpenSourceBridgeSchedule extends Activity {
 			if (e != null) {
 				TextView title = (TextView) v.findViewById(R.id.title);
 				TextView location = (TextView) v.findViewById(R.id.location);
+				TextView time = (TextView) v.findViewById(R.id.time);
 				if (title != null) {
 					title.setText(e.title);
 				}
 				if (location != null) {
 					location.setText(e.location);
-				} else {
-					v.findViewById(R.id.separator).setVisibility(0);
+				}
+				if (time != null) {
+					DateFormat formatter = new SimpleDateFormat("HH:mm");
+					time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
 				}
 			}
 			return v;
