@@ -4,16 +4,19 @@
       android:versionCode="1"
       android:versionName="1.0">
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".OpenSourceBridgeSchedule"
+        <activity android:name=".OpenSourceBridge"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".OpenSourceBridgeSchedule"
+                  android:label="@string/app_name">
+        </activity>
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="3" />
 
 </manifest> 

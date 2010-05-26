@@ -49,7 +49,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main);       
         
         mBack = (Button) findViewById(R.id.back);
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);

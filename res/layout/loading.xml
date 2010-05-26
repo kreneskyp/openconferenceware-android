@@ -1,0 +1,32 @@
+<LinearLayout 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    android:gravity="center"
+    android:background="#FFF"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <ImageView
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:layout_marginBottom="35dip"
+    />
+    
+    <TextView
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="The conference for open source citizens"
+        android:textColor="#222222"
+        android:textStyle="bold"
+        android:layout_marginBottom="5dip"
+    />
+    
+    <TextView
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="June 1–4, 2010 | Portland, Oregon"
+        android:textColor="#08B9A6"
+        android:textStyle="bold"
+    />    
+</LinearLayout>
