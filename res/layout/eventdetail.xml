@@ -12,7 +12,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="#116db6"
-            android:padding="5px"
             >    
                 <TextView
                 android:id="@+id/title"
@@ -22,12 +21,24 @@
                 android:textColor="#fff"
                 android:textSize="16dip"
                 android:textStyle="bold"
+                android:layout_marginLeft="5px"
+                android:layout_marginTop="5px"
+                android:layout_marginRight="5px"
+                android:layout_marginBottom="2px"
+                />
+                <TextView
+                android:id="@+id/speaker"
+                android:layout_width="wrap_content" 
+                android:layout_height="23dip"
+                android:textColor="#111"
+                android:layout_marginLeft="5px"
                 />
                 <LinearLayout 
-                android:id="@+id/detail"
+                android:id="@+id/time_location"
                 android:layout_width="fill_parent" 
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:padding="3dip"
                 >
                     <TextView
                     android:id="@+id/time"
@@ -44,13 +55,8 @@
                     android:textColor="#000"
                     />
                 </LinearLayout>
+                
             </LinearLayout>
-            <View
-                android:id="@+id/detail_header_highlight"
-                android:layout_width="fill_parent" 
-                android:layout_height="5dip"
-                android:background="#13558A"
-                />
             <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"

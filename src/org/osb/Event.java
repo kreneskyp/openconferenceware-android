@@ -1,4 +1,5 @@
 package org.osb;
+import java.util.ArrayList;
 import java.util.Date;
 import org.osb.R;
 
@@ -17,6 +18,7 @@ public class Event {
 	public String brief;
 	public String id;
 	public int track;
+	public String speakers;
 	
 	public Event(){
 		start = null;
@@ -26,6 +28,7 @@ public class Event {
 		url = null;
 		location = null;
 		track = -1;
+		speakers = null;
 	}
 	
 	public String getTrackName() {
@@ -66,22 +69,22 @@ public class Event {
 	}
 	
 	/**
-	 * @return the resource id for the track color darker shade
-	 */
-	public int getTrackColorDark() {
-		switch(track) {
-		case TRACK_BUSINESS:
-			return R.color.track_business_dark;
-		case TRACK_CHEMISTRY:
-			return R.color.track_chemistry_dark;
-		case TRACK_COOKING:
-			return R.color.track_cooking_dark;
-		case TRACK_CULTURE:
-			return R.color.track_culture_dark;
-		case TRACK_HACKS:
-			return R.color.track_hacks_dark;
-		default:
-			return R.color.track_other_dark;
-		}
-	}
+    * @return the resource id for the track color darker shade
+    */
+    public int getTrackColorDark() {
+	   switch(track) {
+	   case TRACK_BUSINESS:
+	           return R.color.track_business_dark;
+	   case TRACK_CHEMISTRY:
+	           return R.color.track_chemistry_dark;
+	   case TRACK_COOKING:
+	           return R.color.track_cooking_dark;
+	   case TRACK_CULTURE:
+	           return R.color.track_culture_dark;
+	   case TRACK_HACKS:
+	           return R.color.track_hacks_dark;
+	   default:
+	           return R.color.track_other_dark;
+	   }
+    }
 }

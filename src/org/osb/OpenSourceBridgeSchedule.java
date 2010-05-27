@@ -67,12 +67,12 @@ public class OpenSourceBridgeSchedule extends Activity {
     Animation mOutRight;
 	
     View mHeader;
-    View mHeaderHighlight;
     TextView mTitle;
     TextView mTime;
     TextView mLocation;
+    View mTimeLocation;
+    TextView mSpeaker;
     TextView mDescription;
-    
     
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.ics";
@@ -96,8 +96,9 @@ public class OpenSourceBridgeSchedule extends Activity {
         // grab views for details
         View detail = findViewById(R.id.detail);
         mHeader = findViewById(R.id.detail_header);
-        mHeaderHighlight = findViewById(R.id.detail_header_highlight);
+        mSpeaker = (TextView) findViewById(R.id.speaker);
         mTitle = (TextView) detail.findViewById(R.id.title);
+        mTimeLocation = detail.findViewById(R.id.time_location);
         mTime = (TextView) detail.findViewById(R.id.time);
         mLocation = (TextView) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
@@ -268,13 +269,14 @@ public class OpenSourceBridgeSchedule extends Activity {
 					Event event = (Event) item;
 					Context context = getApplicationContext();
 					mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
-					mHeaderHighlight.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 					mTitle.setText(event.title);
 					mLocation.setText(event.location);
 					DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 					DateFormat endFormat = new SimpleDateFormat("h:mm a");
 					String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 					mTime.setText(timeString);
+					mSpeaker.setText(event.speakers);
+					mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 					mDescription.setText(event.description);
 					mFlipper.setInAnimation(mInRight);
                     mFlipper.setOutAnimation(mOutLeft);
@@ -336,7 +338,22 @@ public class OpenSourceBridgeSchedule extends Activity {
 				} else {
 					event.track = -1;
 				}
+				if (json.has("user_titles")){
+					StringBuilder speakers = new StringBuilder();
+					JSONArray speakers_json = json.getJSONArray("user_titles");
+					for(int z=0; z<speakers_json.length(); z++){
+						String speaker = speakers_json.getString(z);
+						if (z>0){
+							speakers.append(", ");
+						}
+						speakers.append(speaker);
+					}
+					event.speakers = speakers.toString();
+				} else {
+					event.speakers = " ";
+				}
 				events.add(event);
+				
 			}
 			calendar.setEvents(events);
 			
