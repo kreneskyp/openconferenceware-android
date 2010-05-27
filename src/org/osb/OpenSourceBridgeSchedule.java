@@ -475,6 +475,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 			int size = filtered.size();
 			for (int i=0; i<size; i++){
 				Object item = filtered.get(i);
+				
+				// find either the first session that hasn't ended yet
+				// or the first time marker that hasn't occured yet.
 				if (item instanceof Date ){
 					Date slot = (Date) item;
 					if (date.before(slot)) {
@@ -484,7 +487,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 				} else {
 					Event event = (Event) item;
 					if (event.end.after(date)) {
-						mEvents.setSelection(i);
+						// should display the time marker instead of the
+						// session
+						mEvents.setSelection(i-1);
 						return;
 					}
 				}
