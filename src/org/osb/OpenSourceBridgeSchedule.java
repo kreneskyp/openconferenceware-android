@@ -494,6 +494,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 					}
 				}
 			}
+			
+			// no current event was found, jump to the next day
+			next();
 		}
 		
 		public int getCount(){
