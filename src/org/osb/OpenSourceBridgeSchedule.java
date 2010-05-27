@@ -137,6 +137,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 		});
         
         loadSchedule();
+        now();
     }
 
 	/**
@@ -438,7 +439,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				ArrayList<Event> items) {
 			super(context, textViewResourceId, items);
 			this.mItems = items;
-			filterDay(JUN1);
+			mFiltered = new ArrayList<Object>();
 		}
 
 		/**
