@@ -60,7 +60,7 @@
             <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:paddingTop="10px"
+            android:background="#171717"
             >
                   <LinearLayout 
                     android:id="@+id/detail"
@@ -68,6 +68,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
+                    android:background="#171717"
+                    android:paddingTop="10px"
                     >
 	                   <TextView
 	                    android:id="@+id/description"
@@ -79,7 +81,8 @@
 	                    <ImageView
 	                        android:layout_marginTop="20px"
 	                        android:layout_width="75px"
-	                        android:layout_height="43px"
+	                        android:layout_height="31px"
+	                        android:layout_marginBottom="15px"
 	                        android:src="@drawable/icon_footer"
 	                        android:layout_gravity="center_horizontal"
 	                    />
