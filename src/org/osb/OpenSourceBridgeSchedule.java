@@ -52,7 +52,6 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final Date JUN3 = new Date(110, 5, 3);
 	private static final Date JUN4 = new Date(110, 5, 4);
 
-	private static final int MENU_NOW = 0;
 	private static final int MENU_JUN1 = 1;
 	private static final int MENU_JUN2 = 2;
 	private static final int MENU_JUN3 = 3;
@@ -60,6 +59,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final int MENU_NEXT = 5;
 	private static final int MENU_PREV = 6;
 	private static final int MENU_ABOUT = 7;
+	private static final int MENU_NOW = 8;
 	
 	Date mCurrentDate;
 	TextView mDate;
