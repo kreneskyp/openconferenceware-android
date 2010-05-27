@@ -1,18 +1,24 @@
 package org.osb;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -31,7 +37,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -39,6 +44,9 @@ import android.widget.ViewFlipper;
 
 public class OpenSourceBridgeSchedule extends Activity {
 
+	// Cache files for 2 hours (in milliseconds)
+	private static final long CACHE_TIMEOUT = 7200000;
+	
 	private static final Date JUN1 = new Date(110, 5, 1);
 	private static final Date JUN2 = new Date(110, 5, 2);
 	private static final Date JUN3 = new Date(110, 5, 3);
@@ -75,7 +83,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     TextView mDescription;
     
     
-    private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.ics";
+    private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
     
     
     /** Called when the activity is first created. */
@@ -102,6 +110,31 @@ public class OpenSourceBridgeSchedule extends Activity {
         mTime = (TextView) detail.findViewById(R.id.time);
         mLocation = (TextView) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
+        
+        mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
+				Object item = mAdapter.mFiltered.get(position);
+				if (item instanceof Date) {
+					return;// ignore clicks on the dates
+				}
+				Event event = (Event) item;
+				Context context = getApplicationContext();
+				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
+				mTitle.setText(event.title);
+				mLocation.setText(event.location);
+				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
+				DateFormat endFormat = new SimpleDateFormat("h:mm a");
+				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
+				mTime.setText(timeString);
+				mSpeaker.setText(event.speakers);
+				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
+				mDescription.setText(event.description);
+				mFlipper.setInAnimation(mInRight);
+                mFlipper.setOutAnimation(mOutLeft);
+                mFlipper.showNext();
+                mDetail = true;
+			}
+		});
         
         loadSchedule();
     }
@@ -242,52 +275,63 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 * Loads the osbridge schedule from a combination of ICal and json data
 	 */
 	private void loadSchedule() {
-		//XXX set date to a day that is definitely, not now.  This will cause it to update the list immediately.
+		//XXX set date to a day that is definitely, not now.  
+		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
+		ICal calendar = new ICal();
+		parseProposals(calendar);
+		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
+        mEvents.setAdapter(mAdapter);
+	}
+
+	/**
+	 * fetches a url and returns it as a string.  This method will cache the
+	 * result locally and use the cache on repeat loads
+	 * @param uri - a uri beginning with http://
+	 * @param force - force refresh of data
+	 * @return
+	 */
+	private String getURL(String uri, boolean force){
 		InputStream is = null;
-        URLConnection conn = null;
+		OutputStream os = null;
+		Context context = getApplicationContext();
+		
+		// get file path for cached file
+		String dir = context.getFilesDir().getAbsolutePath();
+		String path = uri.substring(uri.lastIndexOf("/")+1);
+		File file = new File(dir+"/"+path);
+		String line;
+		StringBuilder sb = new StringBuilder();
 		try {
-			/*URL url = new URL(SCHEDULE_URI);
-		    conn = url.openConnection(); 
-		    conn.setDoInput(true); 
-		    conn.setUseCaches(false);
-			is = conn.getInputStream();
-			*/
-			
-			ICal calendar = new ICal();
-			parseProposals(calendar);
-			// parse the proposals json to get additional fields*/
-			
-			mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
-	        mEvents.setAdapter(mAdapter);
-			mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
-				public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
-					Object item = mAdapter.mFiltered.get(position);
-					if (item instanceof Date) {
-						return;// ignore clicks on the dates
-					}
-					Event event = (Event) item;
-					Context context = getApplicationContext();
-					mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
-					mTitle.setText(event.title);
-					mLocation.setText(event.location);
-					DateFormat startFormat = new SimpleDateFormat("E, h:mm");
-					DateFormat endFormat = new SimpleDateFormat("h:mm a");
-					String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
-					mTime.setText(timeString);
-					mSpeaker.setText(event.speakers);
-					mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
-					mDescription.setText(event.description);
-					mFlipper.setInAnimation(mInRight);
-                    mFlipper.setOutAnimation(mOutLeft);
-                    mFlipper.showNext();
-                    mDetail = true;
+			// determine whether to open local file or remote file
+			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() ){
+				is = new FileInputStream(file);
+			} else {
+				URL url = new URL(uri);
+				URLConnection conn = url.openConnection(); 
+				conn.setDoInput(true); 
+				conn.setUseCaches(false);
+				is = conn.getInputStream();
+				os = context.openFileOutput(path, Context.MODE_PRIVATE);
+			}
+		
+			// read entire file, write cache at same time if we are fetching from the remote uri
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+			OutputStreamWriter bw = null;
+			if (os != null) {
+				bw = new OutputStreamWriter(os);
+			}
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				if (bw != null) {
+					bw.append(line);
 				}
-			});
+			}
+			if (bw != null) {
+				bw.flush();
+			}
 			
-			// always set the initial state to "now"
-			now();
-        } catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (is!=null) {
@@ -297,27 +341,28 @@ public class OpenSourceBridgeSchedule extends Activity {
 					e.printStackTrace();
 				}
 			}
+			if (os!=null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
+		
+		return sb.toString();
 	}
-
+	
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
 	 */
 	private void parseProposals(ICal calendar){
-		InputStream is;
-		
-		is = getResources().openRawResource(R.raw.schedule);
-		String line;
-		StringBuilder sb = new StringBuilder();
+		String raw_json = getURL(SCHEDULE_URI, false); 
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 		ArrayList<Event> events = new ArrayList<Event>();
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}	
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
-			JSONObject schedule = new JSONObject(sb.toString());
+			JSONObject schedule = new JSONObject(raw_json);
 			JSONArray json_events = schedule.getJSONArray("items");
 			int size = json_events.length();
 			for(int i=0; i<size; i++){
@@ -360,16 +405,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}
 			calendar.setEvents(events);
 			
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
-		} finally {
-			if (is!=null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
