@@ -372,7 +372,13 @@ public class OpenSourceBridgeSchedule extends Activity {
 				
 				event.id = json.getString("event_id");
 				event.title = json.getString("title");
-				event.description = json.getString("description").replace("\r","");
+				event.description = json.getString("description")
+							.replace("\r","")
+							.replace("<br>","\n")
+							.replace("<blockquote>","")
+							.replace("</blockquote>","")
+							.replace("<b>","")
+							.replace("</b>","");
 				if (event.description.equals("")){
 					//XXX fill description with spaces, fixes a bug where android will
 					//    center the logo on the detail page without content in description
