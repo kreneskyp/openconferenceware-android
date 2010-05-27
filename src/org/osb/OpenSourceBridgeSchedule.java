@@ -327,6 +327,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 				event.id = json.getString("event_id");
 				event.title = json.getString("title");
 				event.description = json.getString("description").replace("\r","");
+				if (event.description.equals("")){
+					//XXX fill description with spaces, fixes a bug where android will
+					//    center the logo on the detail page without content in description
+					event.description = "                                                                                  ";
+				}
 				event.start = formatter.parse(json.getString("start_time"));
 				event.end = formatter.parse(json.getString("end_time"));
 				event.location = json.getString("room_title");
@@ -349,8 +354,6 @@ public class OpenSourceBridgeSchedule extends Activity {
 						speakers.append(speaker);
 					}
 					event.speakers = speakers.toString();
-				} else {
-					event.speakers = " ";
 				}
 				events.add(event);
 				
