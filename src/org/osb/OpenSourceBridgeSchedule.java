@@ -38,6 +38,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -80,6 +81,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     TextView mLocation;
     View mTimeLocation;
     TextView mSpeaker;
+    ScrollView mDescriptionScroller;
     TextView mDescription;
     
     
@@ -110,6 +112,7 @@ public class OpenSourceBridgeSchedule extends Activity {
         mTime = (TextView) detail.findViewById(R.id.time);
         mLocation = (TextView) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
+        mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -129,6 +132,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				mSpeaker.setText(event.speakers);
 				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 				mDescription.setText(event.description);
+				mDescriptionScroller.scrollTo(0, 0);
 				mFlipper.setInAnimation(mInRight);
                 mFlipper.setOutAnimation(mOutLeft);
                 mFlipper.showNext();

@@ -58,6 +58,7 @@
                 
             </LinearLayout>
             <ScrollView
+            android:id="@+id/description_scroller"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:background="#171717"
