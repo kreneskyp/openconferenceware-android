@@ -25,6 +25,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,10 +35,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -78,7 +82,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     View mHeader;
     TextView mTitle;
     TextView mTime;
-    TextView mLocation;
+    Button mLocation;
     View mTimeLocation;
     TextView mSpeaker;
     ScrollView mDescriptionScroller;
@@ -110,7 +114,7 @@ public class OpenSourceBridgeSchedule extends Activity {
         mTitle = (TextView) detail.findViewById(R.id.title);
         mTimeLocation = detail.findViewById(R.id.time_location);
         mTime = (TextView) detail.findViewById(R.id.time);
-        mLocation = (TextView) detail.findViewById(R.id.location);
+        mLocation = (Button) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
         mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
         
@@ -140,6 +144,34 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}
 		});
         
+        mLocation.setOnClickListener(new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				String url = mapRoomNameToFqUrl(((Button)v).getText().toString());
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				startActivity(intent);
+			}
+
+			private String mapRoomNameToFqUrl(String roomName) {
+				String vid = "";
+				if (roomName.equals("Hawthorne")) {
+					vid = "4281683";
+				} else if (roomName.equals("Burnside")) {
+					vid = "4281826";
+				} else if (roomName.equals("St. Johns")) {
+					vid = "4281970";
+				} else if (roomName.equals("Broadway")) {
+					vid = "4281777";
+				} else if (roomName.equals("Morrison")) {
+					vid = "4281923";
+				} else if (roomName.equals("Fremont")) {
+					vid = "4281874";
+				} else if (roomName.equals("Steel")) {
+					vid = "4282004";
+				}
+				return "http://m.foursquare.com/checkin?vid="+vid;
+			}
+		});
         loadSchedule();
         now();
     }

@@ -47,9 +47,9 @@
                     android:layout_height="wrap_content"
                     android:textColor="#000"
                     />
-                    <TextView
+                    <Button
                     android:id="@+id/location"
-                    android:layout_width="78dip"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:textColor="#000"
