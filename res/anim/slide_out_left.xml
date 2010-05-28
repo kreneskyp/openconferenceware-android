@@ -6,6 +6,6 @@ android:interpolator="@android:anim/accelerate_interpolator"
     <translate
     	android:fromXDelta="0"
     	android:toXDelta="-100%p"
-    	android:duration="500"
+    	android:duration="400"
     	/>
 </set>
