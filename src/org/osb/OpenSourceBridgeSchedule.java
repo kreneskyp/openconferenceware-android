@@ -82,12 +82,13 @@ public class OpenSourceBridgeSchedule extends Activity {
     View mHeader;
     TextView mTitle;
     TextView mTime;
-    Button mLocation;
+    TextView mLocation;
     View mTimeLocation;
     TextView mSpeaker;
     ScrollView mDescriptionScroller;
     TextView mDescription;
     
+    Button mFoursquare;
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
     
@@ -114,9 +115,12 @@ public class OpenSourceBridgeSchedule extends Activity {
         mTitle = (TextView) detail.findViewById(R.id.title);
         mTimeLocation = detail.findViewById(R.id.time_location);
         mTime = (TextView) detail.findViewById(R.id.time);
-        mLocation = (Button) detail.findViewById(R.id.location);
+        mLocation = (TextView) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
         mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
+        
+        // detail action buttons 
+        mFoursquare = (Button) findViewById(R.id.foursquare);
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -144,7 +148,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}
 		});
         
-        mLocation.setOnClickListener(new OnClickListener() { 
+        mFoursquare.setOnClickListener(new OnClickListener() { 
 			@Override
 			public void onClick(View v) {
 				String url = mapRoomNameToFqUrl(((Button)v).getText().toString());
@@ -341,7 +345,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 		StringBuilder sb = new StringBuilder();
 		try {
 			// determine whether to open local file or remote file
-			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() ){
+			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis()){
 				is = new FileInputStream(file);
 			} else {
 				URL url = new URL(uri);
