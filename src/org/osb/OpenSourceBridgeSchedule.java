@@ -42,6 +42,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -88,9 +89,12 @@ public class OpenSourceBridgeSchedule extends Activity {
     TextView mSpeaker;
     ScrollView mDescriptionScroller;
     TextView mDescription;
+    ImageView mMapImage;
     
     Button mFoursquare;
     Button mShare;
+    Button mMap;
+    Button mShowDescription;
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
     
@@ -120,10 +124,13 @@ public class OpenSourceBridgeSchedule extends Activity {
         mLocation = (TextView) detail.findViewById(R.id.location);
         mDescription = (TextView) detail.findViewById(R.id.description);
         mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
+        mMapImage = (ImageView) detail.findViewById(R.id.map_image);
         
         // detail action buttons 
         mFoursquare = (Button) findViewById(R.id.foursquare);
         mShare = (Button) findViewById(R.id.share);
+        mMap = (Button) findViewById(R.id.map);
+        mShowDescription = (Button) findViewById(R.id.show_description);
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -143,6 +150,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				mSpeaker.setText(event.speakers);
 				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 				mDescription.setText(event.description);
+				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
 				mFlipper.setInAnimation(mInRight);
                 mFlipper.setOutAnimation(mOutLeft);
@@ -150,6 +158,41 @@ public class OpenSourceBridgeSchedule extends Activity {
                 mDetail = true;
 			}
 		});
+        
+        mShowDescription.setOnClickListener(new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				show_description();
+			}
+        });
+        
+        mMap.setOnClickListener(new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				mMapImage.setImageResource(getMapResource(mLocation.getText()));
+				mDescription.setVisibility(View.GONE);
+				mMapImage.setVisibility(View.VISIBLE);
+			}
+			
+			private int getMapResource(CharSequence roomName) {
+				if (roomName.equals("Hawthorne")) {
+					return R.drawable.hawthorne;
+				} else if (roomName.equals("Burnside")) {
+					return R.drawable.burnside;
+				} else if (roomName.equals("St. Johns")) {
+					return R.drawable.st_johns;
+				} else if (roomName.equals("Broadway")) {
+					return R.drawable.broadway;
+				} else if (roomName.equals("Morrison")) {
+					return R.drawable.morrison;
+				} else if (roomName.equals("Fremont")) {
+					return R.drawable.freemont;
+				} else if (roomName.equals("Steel")) {
+					return R.drawable.steel;
+				}
+				return R.drawable.icon_footer;
+			}
+        });
         
         mFoursquare.setOnClickListener(new OnClickListener() { 
 			@Override
@@ -194,6 +237,14 @@ public class OpenSourceBridgeSchedule extends Activity {
         loadSchedule();
         now();
     }
+	
+	/**
+	 * Shows the session description, hides all other subviews
+	 */
+	private void show_description(){
+		mMapImage.setVisibility(View.GONE);
+		mDescription.setVisibility(View.VISIBLE);
+	}
 	
 	/**
 	 * overridden to hook back button when on the detail page
