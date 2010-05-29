@@ -1,0 +1,54 @@
+<LinearLayout 
+android:id="@+id/speaker_details"
+android:layout_width="fill_parent" 
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:background="#171717"
+xmlns:android="http://schemas.android.com/apk/res/android"
+>
+
+     <TextView 
+        android:id="@+id/name"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
+     />
+     
+     <TextView 
+        android:id="@+id/affiliation"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+     />
+     
+     <TextView 
+        android:id="@+id/twitter"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+     />
+     
+     <TextView 
+        android:id="@+id/website"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+     />
+     
+     <TextView 
+        android:id="@+id/blog"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+     />
+     
+     <TextView 
+        android:id="@+id/identica"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+     />
+     
+     <TextView 
+        android:id="@+id/biography"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
+     />
+     
+</LinearLayout>

@@ -1,5 +1,7 @@
 package org.osb;
 import java.util.Date;
+
+import org.json.JSONArray;
 import org.osb.R;
 
 public class Event {
@@ -18,6 +20,7 @@ public class Event {
 	public String id;
 	public int track;
 	public String speakers;
+	public JSONArray speaker_ids;
 	
 	public Event(){
 		start = null;
@@ -28,6 +31,7 @@ public class Event {
 		location = null;
 		track = -1;
 		speakers = null;
+		speaker_ids = null;
 	}
 	
 	public String getTrackName() {

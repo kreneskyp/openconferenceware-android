@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +44,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -68,19 +70,25 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final int MENU_ABOUT = 7;
 	private static final int MENU_NOW = 8;
 	
+	// state
 	Date mCurrentDate;
 	TextView mDate;
 	boolean mDetail = false;
 	
+	// session list
 	EventAdapter mAdapter;
 	ListView mEvents;
 	
+	// screen animation
 	ViewFlipper mFlipper;
 	Animation mInLeft;
     Animation mInRight;
     Animation mOutLeft;
     Animation mOutRight;
 	
+    // session details
+    Event mEvent = null;
+    HashMap<Integer, Speaker> mSpeakers;
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -90,20 +98,25 @@ public class OpenSourceBridgeSchedule extends Activity {
     ScrollView mDescriptionScroller;
     TextView mDescription;
     ImageView mMapImage;
+    LinearLayout mBio;
     
+    // session detail actions
     Button mFoursquare;
     Button mShare;
     Button mMap;
     Button mShowDescription;
+    Button mShowBio;
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
-    
+    private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
     
     /** Called when the activity is first created. */
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);       
+        setContentView(R.layout.main);
+        
+        mSpeakers = new HashMap<Integer, Speaker>();
         
         mDate = (TextView) findViewById(R.id.date);
         mEvents = (ListView) findViewById(R.id.events);
@@ -125,12 +138,14 @@ public class OpenSourceBridgeSchedule extends Activity {
         mDescription = (TextView) detail.findViewById(R.id.description);
         mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
         mMapImage = (ImageView) detail.findViewById(R.id.map_image);
+        mBio = (LinearLayout) detail.findViewById(R.id.bio);
         
         // detail action buttons 
         mFoursquare = (Button) findViewById(R.id.foursquare);
         mShare = (Button) findViewById(R.id.share);
         mMap = (Button) findViewById(R.id.map);
         mShowDescription = (Button) findViewById(R.id.show_description);
+        mShowBio = (Button) findViewById(R.id.show_bio);
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -155,6 +170,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				mFlipper.setInAnimation(mInRight);
                 mFlipper.setOutAnimation(mOutLeft);
                 mFlipper.showNext();
+                mEvent = event;
                 mDetail = true;
 			}
 		});
@@ -171,6 +187,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 			public void onClick(View v) {
 				mMapImage.setImageResource(getMapResource(mLocation.getText()));
 				mDescription.setVisibility(View.GONE);
+				mBio.setVisibility(View.GONE);
 				mMapImage.setVisibility(View.VISIBLE);
 			}
 			
@@ -191,6 +208,105 @@ public class OpenSourceBridgeSchedule extends Activity {
 					return R.drawable.steel;
 				}
 				return R.drawable.icon_footer;
+			}
+        });
+        
+        mShowBio.setOnClickListener(new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				
+				mBio.removeAllViews();
+				JSONArray speaker_ids = mEvent.speaker_ids;
+				for (int i=0; i<speaker_ids.length(); i++) {
+					try {
+						mBio.addView(loadBioView(speaker_ids.getInt(i)));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				mDescription.setVisibility(View.GONE);
+				mMapImage.setVisibility(View.GONE);
+				mBio.setVisibility(View.VISIBLE);
+			}
+			
+			/**
+			 * loads a view populated with the speakers info
+			 * @param id
+			 * @return
+			 */
+			private View loadBioView(int sid) {
+				Integer id = new Integer(sid);
+				Speaker speaker = null;
+				View view = null;
+				// check memory to see if speaker had already been loaded
+				// else load the speaker from persistent storage
+				if (mSpeakers.containsKey(id)){
+					speaker = mSpeakers.get(id);
+				} else {
+					String raw = getURL(SPEAKER_URI_BASE + id + ".json", false);
+					try {
+						JSONObject json = new JSONObject(raw);
+						speaker = new Speaker();
+						mSpeakers.put(id, speaker);
+						speaker.name  = json.getString("fullname");
+						speaker.biography  = json.getString("biography");
+						if (json.has("twitter")) {
+							speaker.twitter  = json.getString("twitter");
+						}
+						if (json.has("identica")){
+							speaker.identica  = json.getString("identica");
+						}
+						if (json.has("website")) {
+							speaker.website  = json.getString("website");
+						}
+						if (json.has("blog_url")) {
+							speaker.blog = json.getString("blog_url");
+						}
+						if (json.has("affilliation")) {
+							speaker.affiliation  = json.getString("affilliation");
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				if (speaker != null) {
+					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					view = vi.inflate(R.layout.bio, null);
+					TextView name = (TextView) view.findViewById(R.id.name);
+					name.setText(speaker.name);
+					TextView biography = (TextView) view.findViewById(R.id.biography);
+					name.setText(speaker.biography);
+					
+					if (speaker.twitter!= null){
+						TextView text = (TextView) view.findViewById(R.id.twitter);
+						text.setText(speaker.twitter);
+					}
+					
+					if (speaker.website!= null){
+						TextView text = (TextView) view.findViewById(R.id.website);
+						text.setText(speaker.website);
+					}
+					
+					if (speaker.blog!= null){
+						TextView text = (TextView) view.findViewById(R.id.blog);
+						text.setText(speaker.blog);
+					}
+					
+					if (speaker.affiliation!= null){
+						TextView text = (TextView) view.findViewById(R.id.affiliation);
+						text.setText(speaker.affiliation);
+					}
+					
+					if (speaker.identica!= null){
+						TextView text = (TextView) view.findViewById(R.id.identica);
+						text.setText(speaker.identica);
+					}
+				}
+				
+				// create view
+				return view;
 			}
         });
         
@@ -243,6 +359,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 */
 	private void show_description(){
 		mMapImage.setVisibility(View.GONE);
+		mBio.setVisibility(View.GONE);
 		mDescription.setVisibility(View.VISIBLE);
 	}
 	
@@ -512,6 +629,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 						speakers.append(speaker);
 					}
 					event.speakers = speakers.toString();
+				}
+				if (json.has("user_ids")){
+					event.speaker_ids = json.getJSONArray("user_ids");
 				}
 				events.add(event);
 				
