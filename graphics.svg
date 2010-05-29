@@ -727,6 +727,121 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3569"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3606"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       id="filter4874-04"
+       inkscape:label="Inner Glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:menu-tooltip="Adds a colorizable glow inside"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur4876-6"
+         stdDeviation="10"
+         result="result8" />
+      <feComposite
+         id="feComposite4878-7"
+         in2="result8"
+         result="result6"
+         in="SourceGraphic"
+         operator="in" />
+      <feComposite
+         id="feComposite4880-6"
+         in2="result6"
+         operator="in"
+         result="result11" />
+      <feFlood
+         id="feFlood4882-0"
+         result="result10"
+         in="result11"
+         flood-opacity="1"
+         flood-color="rgb(255,222,85)" />
+      <feBlend
+         id="feBlend4884-9"
+         in2="result10"
+         mode="normal"
+         in="result11"
+         result="result12" />
+      <feComposite
+         id="feComposite4886-7"
+         in2="SourceGraphic"
+         result="result2"
+         operator="in"
+         in="result12" />
+    </filter>
+    <inkscape:perspective
+       id="perspective3674"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3704"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       id="filter4874-04-1"
+       inkscape:label="Inner Glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:menu-tooltip="Adds a colorizable glow inside"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur4876-6-0"
+         stdDeviation="10"
+         result="result8" />
+      <feComposite
+         id="feComposite4878-7-7"
+         in2="result8"
+         result="result6"
+         in="SourceGraphic"
+         operator="in" />
+      <feComposite
+         id="feComposite4880-6-6"
+         in2="result6"
+         operator="in"
+         result="result11" />
+      <feFlood
+         id="feFlood4882-0-0"
+         result="result10"
+         in="result11"
+         flood-opacity="1"
+         flood-color="rgb(255,222,85)" />
+      <feBlend
+         id="feBlend4884-9-1"
+         in2="result10"
+         mode="normal"
+         in="result11"
+         result="result12" />
+      <feComposite
+         id="feComposite4886-7-0"
+         in2="SourceGraphic"
+         result="result2"
+         operator="in"
+         in="result12" />
+    </filter>
+    <inkscape:perspective
+       id="perspective3775"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -736,8 +851,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.2616631"
-     inkscape:cx="414.77592"
-     inkscape:cy="192.13777"
+     inkscape:cx="384.85802"
+     inkscape:cy="231.20819"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -843,7 +958,7 @@
        inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/share.png"
        inkscape:export-xdpi="135.55876"
        inkscape:export-ydpi="135.55876"
-       transform="translate(1266.7992,1052.8843)">
+       transform="translate(1339.3062,944.00661)">
       <rect
          y="-179.25562"
          x="-961.09656"
@@ -1275,6 +1390,118 @@
          id="rect5375-3"
          d="m 479.72793,888.94727 -9.51065,9.8842 -3.68869,-4.57707 c -0.0176,0.0631 -0.037,0.12658 -0.058,0.18927 -0.28906,1.12747 -1.06989,2.03096 -2.05871,2.58015 l 5.86714,4.06722 11.86849,-9.65081 -2.41963,-2.49296 z m -10.64236,-0.79948 -2.81577,3.21746 c 0.31822,0.70113 0.46578,1.4781 0.38239,2.25184 1.19893,1.48814 2.39673,2.97718 3.59599,4.46506 1.54603,-1.61951 3.09192,-3.23915 4.63887,-4.85903 l -5.80148,-5.07533 z m -6.59716,1.42912 c -2.03577,0 -3.6887,1.64906 -3.6887,3.68484 0,2.03576 1.65293,3.68869 3.6887,3.68869 2.03577,0 3.68482,-1.65293 3.68482,-3.68869 0,-2.03578 -1.64905,-3.68484 -3.68482,-3.68484 z m 15.34186,6.22249 c -2.51192,1.96693 -5.02315,3.93593 -7.53574,5.90191 -2.13338,-1.47488 -4.26488,-2.95253 -6.39631,-4.43029 -0.63444,0.25727 -1.32707,0.37659 -2.01623,0.32832 -0.0308,-3.7e-4 -0.062,-0.002 -0.0927,-0.004 l 8.4164,7.36578 7.84861,-8.96486 -0.22403,-0.19699 0,1.5e-4 z"
          style="opacity:0.97000002;fill:#e6e6e6;fill-opacity:1;stroke:none" />
+    </g>
+    <rect
+       style="fill:#ff6600;stroke:none;filter:url(#filter4874-04)"
+       id="rect4232-6-9"
+       width="29.876348"
+       height="29.876348"
+       x="337.97571"
+       y="803.00848"
+       inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/description_down.png"
+       inkscape:export-xdpi="135.55876"
+       inkscape:export-ydpi="135.55876" />
+    <g
+       id="g3956-4"
+       transform="matrix(0.67472527,0,0,0.69901481,138.4791,259.81066)">
+      <rect
+         ry="0.25604504"
+         y="834.26031"
+         x="309.55338"
+         height="2.4312589"
+         width="25.556301"
+         id="rect3026-7"
+         style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+      <rect
+         ry="0.25604504"
+         y="839.25092"
+         x="309.55338"
+         height="2.4312589"
+         width="25.556301"
+         id="rect3026-3-1"
+         style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+      <rect
+         ry="0.25604504"
+         y="844.24146"
+         x="309.55338"
+         height="2.4312589"
+         width="25.556301"
+         id="rect3026-1-4"
+         style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+      <rect
+         ry="0.25604504"
+         y="849.23199"
+         x="309.55338"
+         height="2.4312589"
+         width="25.556301"
+         id="rect3026-0-0"
+         style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+      <rect
+         ry="0.25604504"
+         y="854.2226"
+         x="309.55338"
+         height="2.4312589"
+         width="25.556301"
+         id="rect3026-6-4"
+         style="fill:#e6e6e6;fill-opacity:1;stroke:none" />
+    </g>
+    <g
+       id="g3804"
+       inkscape:export-filename="/home/peter/wrk/OSBridge/res/drawable/description.png"
+       inkscape:export-xdpi="135.55876"
+       inkscape:export-ydpi="135.55876"
+       transform="translate(2.3465019,-6.8048551)">
+      <rect
+         y="769.21887"
+         x="341.73013"
+         height="29.876348"
+         width="29.876348"
+         id="rect4232-9-1"
+         style="fill:none;stroke:none" />
+      <g
+         transform="matrix(0.67472527,0,0,0.69901481,139.18308,193.17002)"
+         id="g3956-4-1-3">
+        <rect
+           style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+           id="rect3026-7-9-8"
+           width="25.556301"
+           height="2.4312589"
+           x="309.55338"
+           y="834.26031"
+           ry="0.25604504" />
+        <rect
+           style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+           id="rect3026-3-1-7-6"
+           width="25.556301"
+           height="2.4312589"
+           x="309.55338"
+           y="839.25092"
+           ry="0.25604504" />
+        <rect
+           style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+           id="rect3026-1-4-1-0"
+           width="25.556301"
+           height="2.4312589"
+           x="309.55338"
+           y="844.24146"
+           ry="0.25604504" />
+        <rect
+           style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+           id="rect3026-0-0-3-3"
+           width="25.556301"
+           height="2.4312589"
+           x="309.55338"
+           y="849.23199"
+           ry="0.25604504" />
+        <rect
+           style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+           id="rect3026-6-4-1-3"
+           width="25.556301"
+           height="2.4312589"
+           x="309.55338"
+           y="854.2226"
+           ry="0.25604504" />
+      </g>
     </g>
   </g>
 </svg>
