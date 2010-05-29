@@ -151,7 +151,7 @@ public class OpenSourceBridgeSchedule extends Activity {
         mFoursquare.setOnClickListener(new OnClickListener() { 
 			@Override
 			public void onClick(View v) {
-				String url = mapRoomNameToFqUrl(((Button)v).getText().toString());
+				String url = mapRoomNameToFqUrl((mLocation).getText().toString());
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 				startActivity(intent);
 			}
