@@ -4,4 +4,8 @@
     <string name="app_name">Open Source Bridge - Schedule</string>
 <string name="about">Open Source Bridge is a new conference for developers working with open source technologies and for people interested in learning the open source way.  This app ensures you always have the conference schedule right in your pocket.</string>
 <string name="author">This app was written by Peter Krenesky, of the Open Source Lab.  The Oregon State University Open Source Lab is the home of growing, high-impact open source communities.\n\nhttp://osuosl.org</string>
+
+    <string name="share_text">I\'m attending \"</string>
+    <string name="share_text2">\" #osb2010</string>
+    <string name="share_subject">This session at Open Source Bridge 2010 was interesting</string>
 </resources>

@@ -26,6 +26,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -89,6 +90,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     TextView mDescription;
     
     Button mFoursquare;
+    Button mShare;
     
     private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
     
@@ -121,6 +123,7 @@ public class OpenSourceBridgeSchedule extends Activity {
         
         // detail action buttons 
         mFoursquare = (Button) findViewById(R.id.foursquare);
+        mShare = (Button) findViewById(R.id.share);
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -176,10 +179,22 @@ public class OpenSourceBridgeSchedule extends Activity {
 				return "http://m.foursquare.com/checkin?vid="+vid;
 			}
 		});
+        
+        mShare.setOnClickListener(new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				Resources r = getApplicationContext().getResources();
+				intent.putExtra(Intent.EXTRA_SUBJECT, r.getString(R.string.share_subject));
+				intent.putExtra(Intent.EXTRA_TEXT, r.getString(R.string.share_text) + mTitle.getText() + r.getString(R.string.share_text2));
+				startActivity(Intent.createChooser(intent, "Share"));
+			}
+        });
         loadSchedule();
         now();
     }
-
+	
 	/**
 	 * overridden to hook back button when on the detail page
 	 */
