@@ -296,7 +296,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 * @param force - force refresh of data
 	 * @return
 	 */
-	private String getURL(String uri, boolean force){
+	private String getURL(String uri, boolean force) throws IOException{
 		InputStream is = null;
 		OutputStream os = null;
 		Context context = getApplicationContext();
@@ -309,15 +309,25 @@ public class OpenSourceBridgeSchedule extends Activity {
 		StringBuilder sb = new StringBuilder();
 		try {
 			// determine whether to open local file or remote file
-			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() ){
+			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
 				is = new FileInputStream(file);
 			} else {
 				URL url = new URL(uri);
-				URLConnection conn = url.openConnection(); 
-				conn.setDoInput(true); 
-				conn.setUseCaches(false);
-				is = conn.getInputStream();
-				os = context.openFileOutput(path, Context.MODE_PRIVATE);
+				URLConnection conn = null;
+				try {
+					conn = url.openConnection(); 
+					conn.setDoInput(true); 
+					conn.setUseCaches(false);
+					is = conn.getInputStream();
+					os = context.openFileOutput(path, Context.MODE_PRIVATE);
+				} catch (IOException e) {
+					// fall back to local file if exists, regardless of age
+					if (file.exists()) {
+						is = new FileInputStream(file);
+					} else {
+						throw e;
+					}
+				}
 			}
 		
 			// read entire file, write cache at same time if we are fetching from the remote uri
@@ -337,7 +347,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 			}
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			// failure to get file, throw this higher
+			throw e;
+			
 		} finally {
 			if (is!=null) {
 				try {
@@ -363,10 +375,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 * @param calendar
 	 */
 	private void parseProposals(ICal calendar){
-		String raw_json = getURL(SCHEDULE_URI, false); 
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 		ArrayList<Event> events = new ArrayList<Event>();
-		try {
+		try{
+			String raw_json = getURL(SCHEDULE_URI, false);
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 			JSONObject schedule = new JSONObject(raw_json);
 			JSONArray json_events = schedule.getJSONArray("items");
 			int size = json_events.length();
@@ -412,16 +424,16 @@ public class OpenSourceBridgeSchedule extends Activity {
 					event.speakers = speakers.toString();
 				}
 				events.add(event);
-				
 			}
-			calendar.setEvents(events);
-			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// unable to get file, show error to user
+			// TODO
 		}
+		calendar.setEvents(events);
 	}
 	
 	protected Dialog onCreateDialog(int id){
