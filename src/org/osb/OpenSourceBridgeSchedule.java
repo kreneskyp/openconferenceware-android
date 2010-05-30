@@ -217,23 +217,25 @@ public class OpenSourceBridgeSchedule extends Activity {
 				
 				mBio.removeAllViews();
 				JSONArray speaker_ids = mEvent.speaker_ids;
-				for (int i=0; i<speaker_ids.length(); i++) {
-					try {
-						View view = loadBioView(speaker_ids.getInt(i));
-						if (view != null) {
-							if (i>0){
-								view.setPadding(0, 30, 0, 0);
+				if (speaker_ids != null) {
+					for (int i=0; i<speaker_ids.length(); i++) {
+						try {
+							View view = loadBioView(speaker_ids.getInt(i));
+							if (view != null) {
+								if (i>0){
+									view.setPadding(0, 30, 0, 0);
+								}
+								mBio.addView(view);
 							}
-							mBio.addView(view);
+						} catch (JSONException e) {
+							e.printStackTrace();
 						}
-					} catch (JSONException e) {
-						e.printStackTrace();
 					}
-				}
 				
-				mDescription.setVisibility(View.GONE);
-				mMapImage.setVisibility(View.GONE);
-				mBio.setVisibility(View.VISIBLE);
+					mDescription.setVisibility(View.GONE);
+					mMapImage.setVisibility(View.GONE);
+					mBio.setVisibility(View.VISIBLE);
+				}
 			}
 			
 			/**
