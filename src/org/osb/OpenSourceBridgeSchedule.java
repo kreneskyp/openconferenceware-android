@@ -221,6 +221,9 @@ public class OpenSourceBridgeSchedule extends Activity {
 					try {
 						View view = loadBioView(speaker_ids.getInt(i));
 						if (view != null) {
+							if (i>0){
+								view.setPadding(0, 30, 0, 0);
+							}
 							mBio.addView(view);
 						}
 					} catch (JSONException e) {
@@ -266,8 +269,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 						if (json.has("blog_url")) {
 							speaker.blog = json.getString("blog_url");
 						}
-						if (json.has("affilliation")) {
-							speaker.affiliation  = json.getString("affilliation");
+						if (json.has("affiliation")) {
+							speaker.affiliation  = json.getString("affiliation");
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -285,29 +288,41 @@ public class OpenSourceBridgeSchedule extends Activity {
 					TextView biography = (TextView) view.findViewById(R.id.biography);
 					biography.setText(speaker.biography);
 					
-					if (speaker.twitter!= null){
+					String twitter = speaker.twitter;
+					if (twitter != null && twitter != ""  && twitter != "null"){
 						TextView text = (TextView) view.findViewById(R.id.twitter);
-						text.setText(speaker.twitter);
+						text.setText(twitter);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
 					}
 					
-					if (speaker.website!= null){
+					String website = speaker.website;
+					if (website != null && website != "" && website != "null"){
 						TextView text = (TextView) view.findViewById(R.id.website);
 						text.setText(speaker.website);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
 					}
 					
-					if (speaker.blog!= null){
+					String blog = speaker.blog;
+					if (blog != null && blog != "" && blog != "null"){
 						TextView text = (TextView) view.findViewById(R.id.blog);
 						text.setText(speaker.blog);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
 					}
 					
-					if (speaker.affiliation!= null){
+					if (speaker.affiliation != null){
 						TextView text = (TextView) view.findViewById(R.id.affiliation);
 						text.setText(speaker.affiliation);
 					}
 					
-					if (speaker.identica!= null){
+					String identica = speaker.identica;
+					if (identica != null && identica != "" && identica != "null"){
 						TextView text = (TextView) view.findViewById(R.id.identica);
 						text.setText(speaker.identica);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
 					}
 				}
 				
