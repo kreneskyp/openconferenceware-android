@@ -10,7 +10,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/name"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-        android:layout_weight="100"
+        android:textSize="18px"
+        android:textColor="#FFF"
      />
      
      <TextView 
@@ -19,34 +20,84 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
      />
      
-     <TextView 
-        android:id="@+id/twitter"
+     <LinearLayout 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		>
+		 <TextView 
+		    android:text="Twitter:"
+            android:layout_width="60px" 
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10px"
+            android:textColor="#FFF"
+		  />
+	     <TextView 
+	        android:id="@+id/twitter"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	     />
+     </LinearLayout>
+     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-     />
-     
-     <TextView 
-        android:id="@+id/website"
+        android:orientation="horizontal"
+        >
+         <TextView 
+            android:text="Website:"
+            android:layout_width="60px" 
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10px"
+            android:textColor="#FFF"
+          />
+	     <TextView 
+	        android:id="@+id/website"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	     />
+     </LinearLayout>
+     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-     />
-     
-     <TextView 
-        android:id="@+id/blog"
+        android:orientation="horizontal"
+        >
+         <TextView 
+            android:text="Blog:"
+            android:layout_width="60px" 
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10px"
+            android:textColor="#FFF"
+          />
+	     <TextView 
+	        android:id="@+id/blog"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	     />
+	 </LinearLayout>
+     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
-     />
-     
-     <TextView 
-        android:id="@+id/identica"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-     />
+        android:orientation="horizontal"
+        >
+         <TextView 
+            android:text="Identica:"
+            android:layout_width="60px" 
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10px"
+            android:textColor="#FFF"
+          />
+	     <TextView 
+	        android:id="@+id/identica"
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	     />
+	 </LinearLayout>
      
      <TextView 
         android:id="@+id/biography"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
+        android:layout_marginTop="15px"
         android:layout_weight="100"
      />
      
