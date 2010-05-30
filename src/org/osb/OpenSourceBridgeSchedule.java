@@ -219,7 +219,10 @@ public class OpenSourceBridgeSchedule extends Activity {
 				JSONArray speaker_ids = mEvent.speaker_ids;
 				for (int i=0; i<speaker_ids.length(); i++) {
 					try {
-						mBio.addView(loadBioView(speaker_ids.getInt(i)));
+						View view = loadBioView(speaker_ids.getInt(i));
+						if (view != null) {
+							mBio.addView(view);
+						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -250,7 +253,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 						speaker = new Speaker();
 						mSpeakers.put(id, speaker);
 						speaker.name  = json.getString("fullname");
-						speaker.biography  = json.getString("biography");
+						speaker.biography  = json.getString("biography").replace("\r","");
 						if (json.has("twitter")) {
 							speaker.twitter  = json.getString("twitter");
 						}
@@ -273,6 +276,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 					}
 				}
 				
+				// create view
 				if (speaker != null) {
 					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					view = vi.inflate(R.layout.bio, null);
@@ -307,7 +311,6 @@ public class OpenSourceBridgeSchedule extends Activity {
 					}
 				}
 				
-				// create view
 				return view;
 			}
         });

@@ -127,6 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:background="#171717"
+            android:fillViewport="true"
             >
                   <LinearLayout 
                     android:id="@+id/detail"
@@ -156,7 +157,7 @@
 				        />
 				        <LinearLayout 
 		                    android:id="@+id/bio"
-		                    android:layout_width="fill_parent" 
+		                    android:layout_width="wrap_content" 
 		                    android:layout_height="wrap_content"
 		                    android:orientation="vertical"
 		                    android:padding="5px"
