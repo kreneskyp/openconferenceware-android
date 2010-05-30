@@ -151,6 +151,7 @@
 				            android:layout_width="wrap_content"
 				            android:layout_height="wrap_content"
 				            android:layout_marginBottom="15px"
+				            android:paddingRight="10px"
 				            android:src="@drawable/icon_footer"
 				            android:layout_gravity="center_horizontal"
 				            android:visibility="gone"
