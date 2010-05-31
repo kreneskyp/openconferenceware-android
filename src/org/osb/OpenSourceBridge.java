@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class OpenSourceBridge extends Activity {
-        private final int SPLASH_DISPLAY_LENGHT = 100;
+        private final int SPLASH_DISPLAY_LENGTH = 100;
         /** Called when the activity is first created. */
         @Override
         public void onCreate(Bundle bundle) {
@@ -22,6 +22,6 @@ public class OpenSourceBridge extends Activity {
                                 OpenSourceBridge.this.startActivity(mainIntent);
                                 OpenSourceBridge.this.finish();
                         }
-                }, SPLASH_DISPLAY_LENGHT);
+                }, SPLASH_DISPLAY_LENGTH);
         }
 }
