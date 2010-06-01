@@ -1,0 +1,21 @@
+
+package org.osb;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+public class GsonFactory
+{
+	static public Gson createGson()
+	{
+
+		GsonBuilder builder = new GsonBuilder();
+		
+		Gson gson = builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'")
+						.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+						.create();
+		
+		return gson;
+	}
+}
