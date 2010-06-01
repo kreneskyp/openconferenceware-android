@@ -30,7 +30,14 @@ public class DataService
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
 	{
-		return getObject(Speaker.class, SPEAKER_URI_BASE + speakerId + ".json", force);
+		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId + ".json", force);
+		
+		if (s.biography != null)
+		{
+			s.biography = s.biography.replace("\r", "");
+		}
+		
+		return s;
 	}
 	
 	public Schedule getSchedule()

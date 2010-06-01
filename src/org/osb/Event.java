@@ -19,12 +19,16 @@ public class Event {
 	public String description;
 	public String title;
 	public String url;
+	@SerializedName("room_title")
 	public String location;
 	public String brief;
 	public String id;
+	@SerializedName("track_id")
 	public int track = -1;
+	public String trackTitle;
 	public String speakers;
 	public String[] user_titles;
+	@SerializedName("user_ids")
 	public Integer[] speaker_ids;
 	
 	public Event(){
@@ -36,7 +40,7 @@ public class Event {
 		location = null;
 		track = -1;
 		speakers = null;
-		speaker_ids = null;
+		speaker_ids = new Integer[0];
 		user_titles = new String[0];
 	}
 	
