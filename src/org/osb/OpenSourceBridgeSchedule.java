@@ -203,7 +203,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				} else if (roomName.equals("Morrison")) {
 					return R.drawable.morrison;
 				} else if (roomName.equals("Fremont")) {
-					return R.drawable.freemont;
+					return R.drawable.fremont;
 				} else if (roomName.equals("Steel")) {
 					return R.drawable.steel;
 				}
