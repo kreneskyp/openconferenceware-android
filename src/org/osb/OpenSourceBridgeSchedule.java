@@ -371,8 +371,14 @@ public class OpenSourceBridgeSchedule extends Activity {
 				startActivity(Intent.createChooser(intent, "Share"));
 			}
         });
-        loadSchedule(false);
-        now();
+        
+        // spawn loading into separate thread
+        mHandler.post(new Runnable() {
+		    public void run() { 
+		    	loadSchedule(true);
+		    	now();
+		    	}
+		});
     }
 	
 	/**
