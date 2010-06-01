@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -69,11 +70,13 @@ public class OpenSourceBridgeSchedule extends Activity {
 	private static final int MENU_PREV = 6;
 	private static final int MENU_ABOUT = 7;
 	private static final int MENU_NOW = 8;
+	private static final int MENU_REFRESH = 9;
 	
 	// state
 	Date mCurrentDate;
 	TextView mDate;
 	boolean mDetail = false;
+	private Handler mHandler; 
 	
 	// session list
 	EventAdapter mAdapter;
@@ -115,6 +118,7 @@ public class OpenSourceBridgeSchedule extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
         
@@ -367,7 +371,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				startActivity(Intent.createChooser(intent, "Share"));
 			}
         });
-        loadSchedule();
+        loadSchedule(false);
         now();
     }
 	
@@ -394,15 +398,14 @@ public class OpenSourceBridgeSchedule extends Activity {
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-	    menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
-	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
-	    
-	    SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
+		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
 	    dayMenu.add(0, MENU_JUN1, 0, "Tuesday, June 1");
 	    dayMenu.add(0, MENU_JUN2, 0, "Wednesday, June 2");
 	    dayMenu.add(0, MENU_JUN3, 0, "Thursday, June 3");
 	    dayMenu.add(0, MENU_JUN4, 0, "Friday, June 4");
-	    
+		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
+	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
+	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
 	}
@@ -433,6 +436,14 @@ public class OpenSourceBridgeSchedule extends Activity {
 			return true;
 		case MENU_ABOUT:
 			showDialog(0);
+			return true;
+		case MENU_REFRESH:
+			mHandler.post(new Runnable() {
+			    public void run() { 
+			    	loadSchedule(true);
+			    	now();
+			    	}
+			}); 
 			return true;
 	    }
 	    return false;
@@ -514,13 +525,14 @@ public class OpenSourceBridgeSchedule extends Activity {
 	
 	/**
 	 * Loads the osbridge schedule from a combination of ICal and json data
+	 * @param force - force reload
 	 */
-	private void loadSchedule() {
+	private void loadSchedule(boolean force) {
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		ICal calendar = new ICal();
-		parseProposals(calendar);
+		parseProposals(calendar, force);
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
 	}
@@ -609,11 +621,12 @@ public class OpenSourceBridgeSchedule extends Activity {
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
+	 * @param force - force refresh
 	 */
-	private void parseProposals(ICal calendar){
+	private void parseProposals(ICal calendar, boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
-			String raw_json = getURL(SCHEDULE_URI, false);
+			String raw_json = getURL(SCHEDULE_URI, force);
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 			JSONObject schedule = new JSONObject(raw_json);
 			JSONArray json_events = schedule.getJSONArray("items");
@@ -835,5 +848,4 @@ public class OpenSourceBridgeSchedule extends Activity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
-	
 }
