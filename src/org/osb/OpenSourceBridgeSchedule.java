@@ -176,14 +176,12 @@ public class OpenSourceBridgeSchedule extends Activity {
 		});
         
         mShowDescription.setOnClickListener(new OnClickListener() { 
-			@Override
 			public void onClick(View v) {
 				show_description();
 			}
         });
         
         mMap.setOnClickListener(new OnClickListener() { 
-			@Override
 			public void onClick(View v) {
 				mMapImage.setImageResource(getMapResource(mLocation.getText()));
 				mDescription.setVisibility(View.GONE);
@@ -212,7 +210,6 @@ public class OpenSourceBridgeSchedule extends Activity {
         });
         
         mShowBio.setOnClickListener(new OnClickListener() { 
-			@Override
 			public void onClick(View v) {
 				
 				mBio.removeAllViews();
@@ -333,7 +330,6 @@ public class OpenSourceBridgeSchedule extends Activity {
         });
         
         mFoursquare.setOnClickListener(new OnClickListener() { 
-			@Override
 			public void onClick(View v) {
 				String url = mapRoomNameToFqUrl((mLocation).getText().toString());
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -362,7 +358,6 @@ public class OpenSourceBridgeSchedule extends Activity {
 		});
         
         mShare.setOnClickListener(new OnClickListener() { 
-			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 				intent.setType("text/plain");
