@@ -1,28 +1,10 @@
 package org.osb;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -51,10 +33,8 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 
-public class OpenSourceBridgeSchedule extends Activity {
+public class ScheduleActivity extends AbstractActivity {
 
-	// Cache files for 2 hours (in milliseconds)
-	private static final long CACHE_TIMEOUT = 7200000;
 	
 	private static final Date JUN1 = new Date(110, 5, 1);
 	private static final Date JUN2 = new Date(110, 5, 2);
@@ -106,9 +86,6 @@ public class OpenSourceBridgeSchedule extends Activity {
     Button mMap;
     Button mShowDescription;
     Button mShowBio;
-    
-    private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
-    private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
     
     /** Called when the activity is first created. */
 	@Override
@@ -213,20 +190,16 @@ public class OpenSourceBridgeSchedule extends Activity {
 			public void onClick(View v) {
 				
 				mBio.removeAllViews();
-				JSONArray speaker_ids = mEvent.speaker_ids;
+				Integer[] speaker_ids = mEvent.speaker_ids;
 				if (speaker_ids != null) {
-					for (int i=0; i<speaker_ids.length(); i++) {
-						try {
-							View view = loadBioView(speaker_ids.getInt(i));
+					for (int i=0; i<speaker_ids.length; i++) {
+							View view = loadBioView(speaker_ids[i]);
 							if (view != null) {
 								if (i>0){
 									view.setPadding(0, 30, 0, 0);
 								}
 								mBio.addView(view);
 							}
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
 					}
 				
 					mDescription.setVisibility(View.GONE);
@@ -249,33 +222,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 				if (mSpeakers.containsKey(id)){
 					speaker = mSpeakers.get(id);
 				} else {
-					try {
-						String raw = getURL(SPEAKER_URI_BASE + id + ".json", false);
-						JSONObject json = new JSONObject(raw);
-						speaker = new Speaker();
-						mSpeakers.put(id, speaker);
-						speaker.name  = json.getString("fullname");
-						speaker.biography  = json.getString("biography").replace("\r","");
-						if (json.has("twitter")) {
-							speaker.twitter  = json.getString("twitter");
-						}
-						if (json.has("identica")){
-							speaker.identica  = json.getString("identica");
-						}
-						if (json.has("website")) {
-							speaker.website  = json.getString("website");
-						}
-						if (json.has("blog_url")) {
-							speaker.blog = json.getString("blog_url");
-						}
-						if (json.has("affiliation")) {
-							speaker.affiliation  = json.getString("affiliation");
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						// file couldn't be loaded
-					}
+					speaker = getDataService().getSpeaker(id, false);
+					mSpeakers.put(id, speaker);
 				}
 				
 				// create view
@@ -327,6 +275,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 				
 				return view;
 			}
+
         });
         
         mFoursquare.setOnClickListener(new OnClickListener() { 
@@ -525,154 +474,14 @@ public class OpenSourceBridgeSchedule extends Activity {
         mEvents.setAdapter(mAdapter);
 	}
 
-	/**
-	 * fetches a url and returns it as a string.  This method will cache the
-	 * result locally and use the cache on repeat loads
-	 * @param uri - a uri beginning with http://
-	 * @param force - force refresh of data
-	 * @return
-	 */
-	private String getURL(String uri, boolean force) throws IOException{
-		InputStream is = null;
-		OutputStream os = null;
-		Context context = getApplicationContext();
-		
-		// get file path for cached file
-		String dir = context.getFilesDir().getAbsolutePath();
-		String path = uri.substring(uri.lastIndexOf("/")+1);
-		File file = new File(dir+"/"+path);
-		String line;
-		StringBuilder sb = new StringBuilder();
-		try {
-			// determine whether to open local file or remote file
-			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
-				is = new FileInputStream(file);
-			} else {
-				URL url = new URL(uri);
-				URLConnection conn = null;
-				try {
-					conn = url.openConnection(); 
-					conn.setDoInput(true); 
-					conn.setUseCaches(false);
-					is = conn.getInputStream();
-					os = context.openFileOutput(path, Context.MODE_PRIVATE);
-				} catch (IOException e) {
-					// fall back to local file if exists, regardless of age
-					if (file.exists()) {
-						is = new FileInputStream(file);
-					} else {
-						throw e;
-					}
-				}
-			}
-		
-			// read entire file, write cache at same time if we are fetching from the remote uri
-			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
-			OutputStreamWriter bw = null;
-			if (os != null) {
-				bw = new OutputStreamWriter(os);
-			}
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-				if (bw != null) {
-					bw.append(line);
-				}
-			}
-			if (bw != null) {
-				bw.flush();
-			}
-			
-		} catch (IOException e) {
-			// failure to get file, throw this higher
-			throw e;
-			
-		} finally {
-			if (is!=null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (os!=null) {
-				try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return sb.toString();
-	}
 	
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
 	 */
 	private void parseProposals(ICal calendar){
-		ArrayList<Event> events = new ArrayList<Event>();
-		try{
-			String raw_json = getURL(SCHEDULE_URI, false);
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
-			JSONObject schedule = new JSONObject(raw_json);
-			JSONArray json_events = schedule.getJSONArray("items");
-			int size = json_events.length();
-			for(int i=0; i<size; i++){
-				JSONObject json = json_events.getJSONObject(i);
-				Event event = new Event();
-				
-				event.id = json.getString("event_id");
-				event.title = json.getString("title");
-				event.description = json.getString("description")
-							.replace("\r","")
-							.replace("<br>","\n")
-							.replace("<blockquote>","")
-							.replace("</blockquote>","")
-							.replace("<b>","")
-							.replace("</b>","");
-				if (event.description.equals("")){
-					//XXX fill description with spaces, fixes a bug where android will
-					//    center the logo on the detail page without content in description
-					event.description = "                                                                                  ";
-				}
-				event.start = formatter.parse(json.getString("start_time"));
-				event.end = formatter.parse(json.getString("end_time"));
-				event.location = json.getString("room_title");
-				if (event.location == "null"){
-					event.location = "";
-				}
-				if (json.has("track_id")){
-					event.track = json.getInt("track_id");
-				} else {
-					event.track = -1;
-				}
-				if (json.has("user_titles")){
-					StringBuilder speakers = new StringBuilder();
-					JSONArray speakers_json = json.getJSONArray("user_titles");
-					for(int z=0; z<speakers_json.length(); z++){
-						String speaker = speakers_json.getString(z);
-						if (z>0){
-							speakers.append(", ");
-						}
-						speakers.append(speaker);
-					}
-					event.speakers = speakers.toString();
-				}
-				if (json.has("user_ids")){
-					event.speaker_ids = json.getJSONArray("user_ids");
-				}
-				events.add(event);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			// unable to get file, show error to user
-			// TODO
-		}
-		calendar.setEvents(events);
+		Schedule sched = getDataService().getSchedule();
+		calendar.setEvents(sched.events);
 	}
 	
 	protected Dialog onCreateDialog(int id){
@@ -693,11 +502,11 @@ public class OpenSourceBridgeSchedule extends Activity {
 	 *
 	 */
 	private class EventAdapter extends ArrayAdapter<Event> {
-		private ArrayList<Event> mItems;
-		private ArrayList<Object> mFiltered;
+		private List<Event> mItems;
+		private List<Object> mFiltered;
 		
 		public EventAdapter(Context context, int textViewResourceId,
-				ArrayList<Event> items) {
+				List<Event> items) {
 			super(context, textViewResourceId, items);
 			this.mItems = items;
 			mFiltered = new ArrayList<Object>();
@@ -708,8 +517,8 @@ public class OpenSourceBridgeSchedule extends Activity {
 		 * @param date - date to filter by
 		 */
 		public void filterDay(Date date){
-			ArrayList<Event> items = mItems;
-			ArrayList<Object> filtered = new ArrayList<Object>();
+			List<Event> items = mItems;
+			List<Object> filtered = new ArrayList<Object>();
 			int size = mItems.size();
 			Date currentStart = null;
 			for (int i=0; i<size; i++){
@@ -732,7 +541,7 @@ public class OpenSourceBridgeSchedule extends Activity {
 		 * @param date
 		 */
 		public void now(Date date) {
-			ArrayList<Object> filtered = mFiltered;
+			List<Object> filtered = mFiltered;
 			int size = filtered.size();
 			for (int i=0; i<size; i++){
 				Object item = filtered.get(i);
@@ -835,5 +644,6 @@ public class OpenSourceBridgeSchedule extends Activity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+
 	
 }

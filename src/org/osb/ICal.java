@@ -1,14 +1,12 @@
 package org.osb;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
 
 
@@ -21,7 +19,7 @@ import java.util.Date;
 public class ICal {
 	
 	private String mName, mVersion, mProdid, mCalscale;
-	private ArrayList<Event> mEvents; 
+	private List<Event> mEvents; 
 	
 	public ICal() {}
 	
@@ -89,18 +87,16 @@ public class ICal {
 					mCalscale = line.substring(9);
 				}
       }
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public ArrayList<Event> getEvents(){
+	public List<Event> getEvents(){
 		return mEvents;
 	}
 	
-	public void setEvents(ArrayList<Event> events){
+	public void setEvents(List<Event> events){
 		mEvents = events;
 	}
 }

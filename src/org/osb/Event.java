@@ -1,8 +1,9 @@
 package org.osb;
 import java.util.Date;
 
-import org.json.JSONArray;
 import org.osb.R;
+
+import com.google.gson.annotations.SerializedName;
 
 public class Event {
 	private static final int TRACK_BUSINESS = 7;
@@ -11,16 +12,20 @@ public class Event {
 	private static final int TRACK_CULTURE = 10;
 	private static final int TRACK_HACKS = 11;
 	
-	public Date start, end;
+	@SerializedName("start_time")
+	public Date start;
+	@SerializedName("end_time")
+	public Date end;
 	public String description;
 	public String title;
 	public String url;
 	public String location;
 	public String brief;
 	public String id;
-	public int track;
+	public int track = -1;
 	public String speakers;
-	public JSONArray speaker_ids;
+	public String[] user_titles;
+	public Integer[] speaker_ids;
 	
 	public Event(){
 		start = null;
@@ -32,6 +37,7 @@ public class Event {
 		track = -1;
 		speakers = null;
 		speaker_ids = null;
+		user_titles = new String[0];
 	}
 	
 	public String getTrackName() {
@@ -89,5 +95,15 @@ public class Event {
 	   default:
 	           return R.color.track_other_dark;
 	   }
+    }
+    
+    @Override
+    public String toString()
+    {
+    		return this.title + "|" + this.id + "|" + this.speakers 
+    				+ "| start="
+    				+ start
+    				+ "| end="
+    				+ end;
     }
 }

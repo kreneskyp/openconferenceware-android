@@ -1,11 +1,10 @@
 package org.osb;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-public class OpenSourceBridge extends Activity {
+public class LaunchActivity extends AbstractActivity {
         private final int SPLASH_DISPLAY_LENGTH = 100;
         /** Called when the activity is first created. */
         @Override
@@ -18,9 +17,9 @@ public class OpenSourceBridge extends Activity {
 
                         public void run() {
                                 /* Create an Intent that will start the Menu-Activity. */
-                                Intent mainIntent = new Intent(OpenSourceBridge.this, OpenSourceBridgeSchedule.class);
-                                OpenSourceBridge.this.startActivity(mainIntent);
-                                OpenSourceBridge.this.finish();
+                                Intent mainIntent = new Intent(LaunchActivity.this, ScheduleActivity.class);
+                                LaunchActivity.this.startActivity(mainIntent);
+                                LaunchActivity.this.finish();
                         }
                 }, SPLASH_DISPLAY_LENGTH);
         }
