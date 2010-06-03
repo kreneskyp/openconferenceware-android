@@ -40,9 +40,14 @@ public class DataService
 		return s;
 	}
 	
-	public Schedule getSchedule()
+	/**
+	 * Gets the schedule
+	 * @param force - force refresh from server
+	 * @return
+	 */
+	public Schedule getSchedule(boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI, false);
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI, force);
 
 		for (Event event : s.events)
 		{
@@ -90,11 +95,7 @@ public class DataService
 	private <T> T getObject(Class<T> clazz, String uri, boolean force)
 	{
 		Gson gson = GsonFactory.createGson();
-		
 		String json = getURL(uri, force);
-		
-		System.out.println(json);
-		
 		return gson.fromJson(json, clazz);
 	}
 	

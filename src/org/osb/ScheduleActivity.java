@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,11 +50,13 @@ public class ScheduleActivity extends AbstractActivity {
 	private static final int MENU_PREV = 6;
 	private static final int MENU_ABOUT = 7;
 	private static final int MENU_NOW = 8;
+	private static final int MENU_REFRESH = 9;
 	
 	// state
 	Date mCurrentDate;
 	TextView mDate;
 	boolean mDetail = false;
+	private Handler mHandler; 
 	
 	// session list
 	EventAdapter mAdapter;
@@ -92,6 +95,7 @@ public class ScheduleActivity extends AbstractActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
         
@@ -178,7 +182,7 @@ public class ScheduleActivity extends AbstractActivity {
 				} else if (roomName.equals("Morrison")) {
 					return R.drawable.morrison;
 				} else if (roomName.equals("Fremont")) {
-					return R.drawable.freemont;
+					return R.drawable.fremont;
 				} else if (roomName.equals("Steel")) {
 					return R.drawable.steel;
 				}
@@ -316,8 +320,14 @@ public class ScheduleActivity extends AbstractActivity {
 				startActivity(Intent.createChooser(intent, "Share"));
 			}
         });
-        loadSchedule();
-        now();
+        
+        // spawn loading into separate thread
+        mHandler.post(new Runnable() {
+		    public void run() { 
+		    	loadSchedule(false);
+		    	now();
+		    	}
+		});
     }
 	
 	/**
@@ -343,15 +353,14 @@ public class ScheduleActivity extends AbstractActivity {
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-	    menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
-	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
-	    
-	    SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
+		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
 	    dayMenu.add(0, MENU_JUN1, 0, "Tuesday, June 1");
 	    dayMenu.add(0, MENU_JUN2, 0, "Wednesday, June 2");
 	    dayMenu.add(0, MENU_JUN3, 0, "Thursday, June 3");
 	    dayMenu.add(0, MENU_JUN4, 0, "Friday, June 4");
-	    
+		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
+	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
+	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
 	}
@@ -382,6 +391,14 @@ public class ScheduleActivity extends AbstractActivity {
 			return true;
 		case MENU_ABOUT:
 			showDialog(0);
+			return true;
+		case MENU_REFRESH:
+			mHandler.post(new Runnable() {
+			    public void run() { 
+			    	loadSchedule(true);
+			    	now();
+			    	}
+			}); 
 			return true;
 	    }
 	    return false;
@@ -463,13 +480,14 @@ public class ScheduleActivity extends AbstractActivity {
 	
 	/**
 	 * Loads the osbridge schedule from a combination of ICal and json data
+	 * @param force - force reload
 	 */
-	private void loadSchedule() {
+	private void loadSchedule(boolean force) {
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		ICal calendar = new ICal();
-		parseProposals(calendar);
+		parseProposals(calendar, force);
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
 	}
@@ -478,9 +496,10 @@ public class ScheduleActivity extends AbstractActivity {
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
+	 * @param force - force refresh
 	 */
-	private void parseProposals(ICal calendar){
-		Schedule sched = getDataService().getSchedule();
+	private void parseProposals(ICal calendar, boolean force){
+		Schedule sched = getDataService().getSchedule(force);
 		calendar.setEvents(sched.events);
 	}
 	
@@ -644,6 +663,4 @@ public class ScheduleActivity extends AbstractActivity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
-
-	
 }
