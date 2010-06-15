@@ -512,16 +512,6 @@ public class ScheduleActivity extends AbstractActivity {
 	}
 
 	
-	/**
-	 * parse events from json file and update the given calendar
-	 * @param calendar
-	 * @param force - force refresh
-	 */
-	private void parseProposals(ICal calendar, boolean force){
-		Schedule sched = getDataService().getSchedule(force);
-		calendar.setEvents(sched.events);
-	}
-	
 	protected Dialog onCreateDialog(int id){
         Context context = getApplicationContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -641,7 +631,6 @@ public class ScheduleActivity extends AbstractActivity {
 						time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
 					}
 					if (e.track != -1) {
-						Context context = getApplicationContext();
 						TextView track_view = (TextView) v.findViewById(R.id.track);
 						Track track = mConference.tracks.get(e.track);
 						track_view.setTextColor(track.color);
