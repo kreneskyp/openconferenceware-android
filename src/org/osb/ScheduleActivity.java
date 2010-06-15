@@ -57,7 +57,10 @@ public class ScheduleActivity extends AbstractActivity {
 	TextView mDate;
 	boolean mDetail = false;
 	Handler mHandler; 
+	
+	// general conference data
 	Conference mConference;
+	Date[] mDates;
 	
 	// session list
 	EventAdapter mAdapter;
@@ -433,8 +436,8 @@ public class ScheduleActivity extends AbstractActivity {
 	 */
 	public void now(){
 		Date now = new Date();
-		if (now.before(JUN1) || now.after(JUN4)) {
-			setDay(JUN1);
+		if (now.before(mDates[0]) || now.after(mConference.end)) {
+			setDay(mDates[0]);
 		} else {
 			// use now, since it will have the time of day for 
 			// jumping to the right time
@@ -446,12 +449,15 @@ public class ScheduleActivity extends AbstractActivity {
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-		if (isSameDay(mCurrentDate, JUN1)) {
-			setDay(JUN2);
-		} else if (isSameDay(mCurrentDate, JUN2)) {
-			setDay(JUN3);
-		} else if (isSameDay(mCurrentDate, JUN3)) {
-			setDay(JUN4);
+		try {
+			if (!isSameDay(mCurrentDate, mConference.end)) {
+				mCurrentDate.setDate(mCurrentDate.getDate()+1);
+				mCurrentDate.setHours(0);
+				mCurrentDate.setMinutes(0);
+				setDay(mCurrentDate);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -459,12 +465,11 @@ public class ScheduleActivity extends AbstractActivity {
 	 * Jumps to the previous day if now already at the beginning
 	 */
 	public void previous() {
-		if (isSameDay(mCurrentDate, JUN4)) {
-			setDay(JUN3);
-		} else if (isSameDay(mCurrentDate, JUN3)) {
-			setDay(JUN2);
-		} else if (isSameDay(mCurrentDate, JUN2)) {
-			setDay(JUN1);
+		if (!isSameDay(mCurrentDate, mConference.start)) {
+			mCurrentDate.setDate(mCurrentDate.getDate()-1);
+			mCurrentDate.setHours(0);
+			mCurrentDate.setMinutes(0);
+			setDay(mCurrentDate);
 		}
 	}
 	
@@ -485,16 +490,25 @@ public class ScheduleActivity extends AbstractActivity {
 	 * @param force - force reload
 	 */
 	private void loadSchedule(boolean force) {
+		System.out.println("================Schedule================");
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		DataService service = getDataService();
 		mConference  = service.getConference(force);
+		try {
+		mDates = mConference.getDates();
 		ICal calendar = new ICal();
-		Schedule schedule = service.getSchedule(force);
+		
+			Schedule schedule = service.getSchedule(force);
+		
 		calendar.setEvents(schedule.events);
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        System.out.println("================Schedule================");
 	}
 
 	
