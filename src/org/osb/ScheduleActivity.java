@@ -139,11 +139,11 @@ public class ScheduleActivity extends AbstractActivity {
 					return;// ignore clicks on the dates
 				}
 				Event event = (Event) item;
-				Context context = getApplicationContext();
 				Track track = mConference.tracks.get(event.track);
+				Location location = mConference.locations.get(event.location);
 				mHeader.setBackgroundColor(track.color);
 				mTitle.setText(event.title);
-				mLocation.setText(event.location);
+				mLocation.setText(location.name);
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
