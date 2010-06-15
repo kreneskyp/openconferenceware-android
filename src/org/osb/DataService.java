@@ -16,9 +16,9 @@ import com.google.gson.Gson;
 
 public class DataService
 {
-    private static final String CONFERENCE_URI = "http://10.0.2.2/android/conference.json";
-	private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
-    private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
+    private static final String CONFERENCE_URI = "http://doors.osuosl.org:8000/conference/";
+	private static final String SCHEDULE_URI = "http://doors.osuosl.org/";
+    private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
 	// Cache files for 2 hours (in milliseconds)
 	private static final long CACHE_TIMEOUT = 7200000;
     
@@ -37,7 +37,7 @@ public class DataService
 	public Conference getConference(boolean force) {
 		Conference conference = null;
 		try{
-		    conference = getObject(Conference.class, CONFERENCE_URI, true);
+		    conference = getObject(Conference.class, CONFERENCE_URI, "conference.json", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,7 +46,7 @@ public class DataService
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
 	{
-		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId + ".json", force);
+		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId, "speaker_"+speakerId+".json", force);
 		
 		if (s.biography != null)
 		{
@@ -63,7 +63,7 @@ public class DataService
 	 */
 	public Schedule getSchedule(boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI, force);
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI, "schedule.json", force);
 
 		for (Event event : s.events)
 		{
@@ -107,11 +107,19 @@ public class DataService
 		return s;
 	}
 	
-	private <T> T getObject(Class<T> clazz, String uri, boolean force)
+	/**
+	 * 
+	 * @param clazz - class to fetch
+	 * @param uri - uri to fetch it from
+	 * @param local_file - local file to cache it in 
+	 * @param force - ignore cache, force remote retrieval
+	 * @return fetched object
+	 */
+	private <T> T getObject(Class<T> clazz, String uri, String local_file, boolean force)
 	{
 		Gson gson = GsonFactory.createGson();
-		String json = getURL(uri, force);
-		System.err.println(json);
+		String json = getURL(uri, local_file, force);
+		System.out.println(json);
 		return gson.fromJson(json, clazz);
 	}
 	
@@ -119,17 +127,17 @@ public class DataService
 	 * fetches a url and returns it as a string.  This method will cache the
 	 * result locally and use the cache on repeat loads
 	 * @param uri - a uri beginning with http://
+	 * @param local_file - local file name data is cached in
 	 * @param force - force refresh of data
 	 * @return
 	 */
-	private String getURL(String uri, boolean force) {
+	private String getURL(String uri, String local_file, boolean force) {
 		InputStream is = null;
 		OutputStream os = null;
 		
 		// get file path for cached file
 		String dir = this.dataDirectory.getAbsolutePath();
-		String path = uri.substring(uri.lastIndexOf("/")+1);
-		File file = new File(dir+"/"+path);
+		File file = new File(dir+"/"+local_file);
 		String line;
 		StringBuilder sb = new StringBuilder();
 		try {
