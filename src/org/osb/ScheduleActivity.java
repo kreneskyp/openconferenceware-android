@@ -145,8 +145,26 @@ public class ScheduleActivity extends AbstractActivity {
 					// load detailed info for this session
 					DataService service = getDataService();
 					event = service.getEvent(event.id, false);
-					mAdapter.mFiltered.add(position, event);
+					mAdapter.mFiltered.set(position, event);
 				}
+				
+				String speaker_names = "";
+				Speaker speaker;
+				for(Integer sid: event.speaker_ids){
+					if (mSpeakers.containsKey(sid)){
+						speaker = mSpeakers.get(sid);
+					} else {
+						speaker = getDataService().getSpeaker(sid, false);
+						mSpeakers.put(sid, speaker);
+					}
+					if (speaker_names == "") {
+						speaker_names = speaker.name; 
+					} else {
+						speaker_names = speaker_names + ", " + speaker.name;
+					}
+				}
+				mSpeaker.setText(speaker_names);
+					
 				mHeader.setBackgroundColor(track.color);
 				mTitle.setText(event.title);
 				mLocation.setText(location.name);
@@ -154,7 +172,6 @@ public class ScheduleActivity extends AbstractActivity {
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 				mTime.setText(timeString);
-				mSpeaker.setText(event.speakers);
 				mTimeLocation.setBackgroundColor(track.color);
 				mDescription.setText(event.description);
 				show_description();
