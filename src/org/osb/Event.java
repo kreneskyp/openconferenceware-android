@@ -5,6 +5,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Event {
 	
+	// flag for determining if all details have been loaded
+	// for this object.
+	public boolean details = false;
+	
 	@SerializedName("start_time")
 	public Date start;
 	@SerializedName("end_time")
@@ -37,6 +41,8 @@ public class Event {
 		user_titles = new String[0];
 	}
     
+	
+	
     @Override
     public String toString()
     {

@@ -19,6 +19,7 @@ public class DataService
     private static final String CONFERENCE_URI = "http://doors.osuosl.org:8000/conference/";
 	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/";
     private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
+    private static final String EVENT_URI_BASE = "http://doors.osuosl.org:8000/session/";
 	// Cache files for 2 hours (in milliseconds)
 	private static final long CACHE_TIMEOUT = 7200000;
     
@@ -43,6 +44,19 @@ public class DataService
 		}
 		return conference;
 	}
+	
+	/**
+	 * loads full details for the event
+	 * @param event
+	 * @param force
+	 * @return
+	 */
+	public Event getEvent(String event_id, boolean force){
+		Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", true);
+		event.details = true;
+		return event;
+	}
+	
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
 	{

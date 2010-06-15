@@ -141,6 +141,12 @@ public class ScheduleActivity extends AbstractActivity {
 				Event event = (Event) item;
 				Track track = mConference.tracks.get(event.track);
 				Location location = mConference.locations.get(event.location);
+				if (!event.details){
+					// load detailed info for this session
+					DataService service = getDataService();
+					event = service.getEvent(event.id, false);
+					mAdapter.mFiltered.add(position, event);
+				}
 				mHeader.setBackgroundColor(track.color);
 				mTitle.setText(event.title);
 				mLocation.setText(location.name);
