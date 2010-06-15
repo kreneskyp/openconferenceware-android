@@ -15,7 +15,7 @@ public class DataServiceTest
 		File dir = new File(".");
 		DataService service = new DataService(dir);
 
-		Schedule s = service.getSchedule();
+		Schedule s = service.getSchedule(false);
 		
 		for (Event e : s.events)
 		{

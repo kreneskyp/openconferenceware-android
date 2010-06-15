@@ -56,7 +56,8 @@ public class ScheduleActivity extends AbstractActivity {
 	Date mCurrentDate;
 	TextView mDate;
 	boolean mDetail = false;
-	private Handler mHandler; 
+	Handler mHandler; 
+	Conference mConference;
 	
 	// session list
 	EventAdapter mAdapter;
@@ -136,7 +137,8 @@ public class ScheduleActivity extends AbstractActivity {
 				}
 				Event event = (Event) item;
 				Context context = getApplicationContext();
-				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
+				Track track = mConference.tracks.get(event.track);
+				mHeader.setBackgroundColor(track.color);
 				mTitle.setText(event.title);
 				mLocation.setText(event.location);
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -144,7 +146,7 @@ public class ScheduleActivity extends AbstractActivity {
 				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 				mTime.setText(timeString);
 				mSpeaker.setText(event.speakers);
-				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
+				mTimeLocation.setBackgroundColor(track.color);
 				mDescription.setText(event.description);
 				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
@@ -323,7 +325,7 @@ public class ScheduleActivity extends AbstractActivity {
         
         // spawn loading into separate thread
         mHandler.post(new Runnable() {
-		    public void run() { 
+		    public void run() {
 		    	loadSchedule(false);
 		    	now();
 		    	}
@@ -353,7 +355,7 @@ public class ScheduleActivity extends AbstractActivity {
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);   
+		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
 	    dayMenu.add(0, MENU_JUN1, 0, "Tuesday, June 1");
 	    dayMenu.add(0, MENU_JUN2, 0, "Wednesday, June 2");
 	    dayMenu.add(0, MENU_JUN3, 0, "Thursday, June 3");
@@ -486,8 +488,11 @@ public class ScheduleActivity extends AbstractActivity {
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
+		DataService service = getDataService();
+		mConference  = service.getConference(force);
 		ICal calendar = new ICal();
-		parseProposals(calendar, force);
+		Schedule schedule = service.getSchedule(force);
+		calendar.setEvents(schedule.events);
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
 	}
@@ -622,9 +627,10 @@ public class ScheduleActivity extends AbstractActivity {
 					}
 					if (e.track != -1) {
 						Context context = getApplicationContext();
-						TextView track = (TextView) v.findViewById(R.id.track);
-						track.setTextColor(context.getResources().getColor(e.getTrackColor()));
-						track.setText(e.getTrackName());
+						TextView track_view = (TextView) v.findViewById(R.id.track);
+						Track track = mConference.tracks.get(e.track);
+						track_view.setTextColor(track.color);
+						track_view.setText(track.name);
 					}
 				}
 			}

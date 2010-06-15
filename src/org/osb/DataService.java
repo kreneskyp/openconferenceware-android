@@ -16,7 +16,8 @@ import com.google.gson.Gson;
 
 public class DataService
 {
-    private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
+    private static final String CONFERENCE_URI = "http://10.0.2.2/android/conference.json";
+	private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2010/schedule.json";
     private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
 	// Cache files for 2 hours (in milliseconds)
 	private static final long CACHE_TIMEOUT = 7200000;
@@ -26,6 +27,21 @@ public class DataService
 	public DataService(File dataDir)
 	{
 		this.dataDirectory = dataDir;
+	}
+	
+	/**
+	 * get the conference object containing general info about the con
+	 * @param force - force refresh
+	 * @return
+	 */
+	public Conference getConference(boolean force) {
+		Conference conference = null;
+		try{
+		    conference = getObject(Conference.class, CONFERENCE_URI, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return conference;
 	}
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
@@ -70,7 +86,6 @@ public class DataService
 				if ( (event.location == "null") || (event.location == null) ) {
 					event.location = "";
 				}
-				
 				if (event.user_titles != null ) {
 					StringBuilder speakers = new StringBuilder();
 					for (int z = 0; z < event.user_titles.length; z++) {
@@ -96,6 +111,7 @@ public class DataService
 	{
 		Gson gson = GsonFactory.createGson();
 		String json = getURL(uri, force);
+		System.err.println(json);
 		return gson.fromJson(json, clazz);
 	}
 	
@@ -134,6 +150,7 @@ public class DataService
 					if (file.exists()) {
 						is = new FileInputStream(file);
 					} else {
+						e.printStackTrace();
 						throw e;
 					}
 				}
@@ -156,6 +173,7 @@ public class DataService
 			}
 			
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 			
 		} finally {
