@@ -508,7 +508,7 @@ public class ScheduleActivity extends AbstractActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        System.out.println("================Schedule================");
+        System.out.println("----------------Schedule----------------");
 	}
 
 	
@@ -627,13 +627,14 @@ public class ScheduleActivity extends AbstractActivity {
 				v = vi.inflate(R.layout.listevent, null);
 				if (e != null) {
 					TextView title = (TextView) v.findViewById(R.id.title);
-					TextView location = (TextView) v.findViewById(R.id.location);
+					TextView locationView = (TextView) v.findViewById(R.id.location);
 					TextView time = (TextView) v.findViewById(R.id.time);
 					if (title != null) {
 						title.setText(e.title);
 					}
-					if (location != null) {
-						location.setText(e.location);
+					if (e.location != -1) {
+						Location location = mConference.locations.get(e.location);
+						locationView.setText(location.name);
 					}
 					if (time != null) {
 						DateFormat formatter = new SimpleDateFormat("h:mm");

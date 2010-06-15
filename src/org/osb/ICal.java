@@ -73,7 +73,7 @@ public class ICal {
 					event.id = event.url.substring(37);
 					
 				} else if(line.startsWith("LOCATION:"))  {
-					event.location = line.substring(9);
+					//event.location = line.substring(9);
 				
 				} else if(line.startsWith("X-WR-CALNAME:"))  {
 					mName = line.substring(13); 

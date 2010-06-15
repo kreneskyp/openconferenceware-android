@@ -19,8 +19,8 @@ public class Event {
 	public String description;
 	public String title;
 	public String url;
-	@SerializedName("room_title")
-	public String location;
+	@SerializedName("room_id")
+	public int location = -1;
 	public String brief;
 	public String id;
 	@SerializedName("track_id")
@@ -37,7 +37,7 @@ public class Event {
 		description = null;
 		title = null;
 		url = null;
-		location = null;
+		location = -1;
 		track = -1;
 		speakers = null;
 		speaker_ids = new Integer[0];

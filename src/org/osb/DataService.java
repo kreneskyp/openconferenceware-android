@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 public class DataService
 {
     private static final String CONFERENCE_URI = "http://doors.osuosl.org:8000/conference/";
-	private static final String SCHEDULE_URI = "http://doors.osuosl.org/";
+	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/";
     private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
 	// Cache files for 2 hours (in milliseconds)
 	private static final long CACHE_TIMEOUT = 7200000;
@@ -63,8 +63,8 @@ public class DataService
 	 */
 	public Schedule getSchedule(boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI, "schedule.json", force);
-
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI, "schedule.json", true);
+		
 		for (Event event : s.events)
 		{
 				if (event.description == null)
@@ -83,9 +83,7 @@ public class DataService
 					//    center the logo on the detail page without content in description
 					event.description = "                                                                                  ";
 				}
-				if ( (event.location == "null") || (event.location == null) ) {
-					event.location = "";
-				}
+
 				if (event.user_titles != null ) {
 					StringBuilder speakers = new StringBuilder();
 					for (int z = 0; z < event.user_titles.length; z++) {
@@ -119,7 +117,7 @@ public class DataService
 	{
 		Gson gson = GsonFactory.createGson();
 		String json = getURL(uri, local_file, force);
-		System.out.println(json);
+		//System.out.println(json);
 		return gson.fromJson(json, clazz);
 	}
 	

@@ -7,6 +7,7 @@ public class Conference {
 	public Date start;
 	public Date end;
 	public HashMap<Integer, Track> tracks = new HashMap<Integer, Track>();
+	public HashMap<Integer, Location> locations = new HashMap<Integer, Location>();
 	
 	/**
 	 * creates array of dates from start and end date of conference
