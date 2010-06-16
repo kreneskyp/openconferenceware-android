@@ -29,7 +29,8 @@
                 <TextView
                 android:id="@+id/speaker"
                 android:layout_width="wrap_content" 
-                android:layout_height="23dip"
+                android:layout_height="wrap_content"
+                android:minHeight="23dip"
                 android:textColor="#111"
                 android:layout_marginLeft="5px"
                 />
