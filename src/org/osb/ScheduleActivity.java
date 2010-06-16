@@ -61,6 +61,7 @@ public class ScheduleActivity extends AbstractActivity {
 	// general conference data
 	Conference mConference;
 	Date[] mDates;
+	HashMap<Date, Schedule> mSchedule;
 	
 	// session list
 	EventAdapter mAdapter;
@@ -102,6 +103,7 @@ public class ScheduleActivity extends AbstractActivity {
         mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
+        mSchedule = new HashMap<Date, Schedule>();
         
         mDate = (TextView) findViewById(R.id.date);
         mEvents = (ListView) findViewById(R.id.events);
@@ -438,8 +440,9 @@ public class ScheduleActivity extends AbstractActivity {
 			// same day, just jump to current time
 			mAdapter.now(date);
 		} else {
-			// different day, update the list
-			mCurrentDate = date;
+			// different day, update the list.  Load the date requested
+			// if it is not already loaded
+			mCurrentDate = date; 
 			mAdapter.filterDay(date);
 			DateFormat formatter = new SimpleDateFormat("E, MMMM d");
 			mDate.setText(formatter.format(mCurrentDate));
@@ -521,19 +524,13 @@ public class ScheduleActivity extends AbstractActivity {
 		mConference  = service.getConference(force);
 		try {
 		mDates = mConference.getDates();
-		ICal calendar = new ICal();
-		
-			Schedule schedule = service.getSchedule(force);
-		
-		calendar.setEvents(schedule.events);
-		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
+		mAdapter = new EventAdapter(this, R.layout.listevent, new ArrayList<Event>());
         mEvents.setAdapter(mAdapter);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         System.out.println("----------------Schedule----------------");
 	}
-
 	
 	protected Dialog onCreateDialog(int id){
         Context context = getApplicationContext();
@@ -559,15 +556,34 @@ public class ScheduleActivity extends AbstractActivity {
 		public EventAdapter(Context context, int textViewResourceId,
 				List<Event> items) {
 			super(context, textViewResourceId, items);
-			this.mItems = items;
+			mItems = items;
 			mFiltered = new ArrayList<Object>();
 		}
 
 		/**
-		 * Filters the list to contain only events for the given date.
+		 * Sets elements to the current schedule.  This will use
+		 * cached data if already loaded.  Else it will load it from
+		 * the dataservice
 		 * @param date - date to filter by
 		 */
 		public void filterDay(Date date){
+			
+			// construct a new date with just year,month,day since keys only have that set
+			try {
+				Date load = new Date(date.getYear(), date.getMonth(), date.getDate());
+			
+				if (mSchedule.containsKey(load)){
+					mItems = mSchedule.get(load).events;
+				} else {
+					DataService service = getDataService();
+					Schedule schedule = service.getSchedule(load, false);
+					mSchedule.put(load, schedule);
+					mItems = schedule.events;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			List<Event> items = mItems;
 			List<Object> filtered = new ArrayList<Object>();
 			int size = mItems.size();

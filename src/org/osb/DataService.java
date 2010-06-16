@@ -11,13 +11,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 import com.google.gson.Gson;
 
 public class DataService
 {
     private static final String CONFERENCE_URI = "http://doors.osuosl.org:8000/conference/";
-	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/";
+	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/sessions_day/";
     private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
     private static final String EVENT_URI_BASE = "http://doors.osuosl.org:8000/session/";
 	// Cache files for 2 hours (in milliseconds)
@@ -72,13 +73,13 @@ public class DataService
 	
 	/**
 	 * Gets the schedule
+	 * @param date - date of schedule to fetch
 	 * @param force - force refresh from server
 	 * @return
 	 */
-	public Schedule getSchedule(boolean force)
+	public Schedule getSchedule(Date date, boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI, "schedule.json", true);
-		
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", true);
 		for (Event event : s.events)
 		{
 				if (event.description == null)
@@ -113,9 +114,7 @@ public class DataService
 					}
 					event.speakers = speakers.toString();
 				} 
-				
 			}
-		
 		return s;
 	}
 	
