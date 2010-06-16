@@ -184,29 +184,14 @@ public class ScheduleActivity extends AbstractActivity {
         
         mMap.setOnClickListener(new OnClickListener() { 
 			public void onClick(View v) {
-				mMapImage.setImageResource(getMapResource(mLocation.getText()));
+				int id = getResources().getIdentifier("map_"+mEvent.location,"drawable",getPackageName());
 				mDescription.setVisibility(View.GONE);
 				mBio.setVisibility(View.GONE);
-				mMapImage.setVisibility(View.VISIBLE);
-			}
-			
-			private int getMapResource(CharSequence roomName) {
-				if (roomName.equals("Hawthorne")) {
-					return R.drawable.hawthorne;
-				} else if (roomName.equals("Burnside")) {
-					return R.drawable.burnside;
-				} else if (roomName.equals("St. Johns")) {
-					return R.drawable.st_johns;
-				} else if (roomName.equals("Broadway")) {
-					return R.drawable.broadway;
-				} else if (roomName.equals("Morrison")) {
-					return R.drawable.morrison;
-				} else if (roomName.equals("Fremont")) {
-					return R.drawable.fremont;
-				} else if (roomName.equals("Steel")) {
-					return R.drawable.steel;
+				// only set&show image if a map image was found
+				if (id!=0){
+					mMapImage.setImageResource(id);
+					mMapImage.setVisibility(View.VISIBLE);
 				}
-				return R.drawable.icon_footer;
 			}
         });
         
@@ -520,7 +505,7 @@ public class ScheduleActivity extends AbstractActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        System.out.println("----------------Schedule----------------");
+		System.out.println("----------------Schedule----------------");
 	}
 	
 	protected Dialog onCreateDialog(int id){
