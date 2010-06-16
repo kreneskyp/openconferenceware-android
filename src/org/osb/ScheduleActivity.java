@@ -379,7 +379,6 @@ public class ScheduleActivity extends AbstractActivity {
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		System.out.println("ITEM SELECTD : "+ id);
 	    switch (id) {
 	    case MENU_NOW:
 	        now();
@@ -455,10 +454,8 @@ public class ScheduleActivity extends AbstractActivity {
 	public void next() {
 		try {
 			if (!isSameDay(mCurrentDate, mConference.end)) {
-				mCurrentDate.setDate(mCurrentDate.getDate()+1);
-				mCurrentDate.setHours(0);
-				mCurrentDate.setMinutes(0);
-				setDay(mCurrentDate);
+				Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()+1);
+				setDay(load);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -470,10 +467,8 @@ public class ScheduleActivity extends AbstractActivity {
 	 */
 	public void previous() {
 		if (!isSameDay(mCurrentDate, mConference.start)) {
-			mCurrentDate.setDate(mCurrentDate.getDate()-1);
-			mCurrentDate.setHours(0);
-			mCurrentDate.setMinutes(0);
-			setDay(mCurrentDate);
+			Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()-1);
+			setDay(load);
 		}
 	}
 	
