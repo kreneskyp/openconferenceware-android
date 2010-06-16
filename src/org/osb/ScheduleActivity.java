@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -156,15 +157,15 @@ public class ScheduleActivity extends AbstractActivity {
 					}
 				}
 				mSpeaker.setText(speaker_names);
-					
-				mHeader.setBackgroundColor(track.color);
+				
+				mHeader.setBackgroundColor(Color.parseColor(track.color));
 				mTitle.setText(event.title);
 				mLocation.setText(location.name);
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 				mTime.setText(timeString);
-				mTimeLocation.setBackgroundColor(track.color);
+				mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
 				mDescription.setText(event.description);
 				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
@@ -419,8 +420,10 @@ public class ScheduleActivity extends AbstractActivity {
 			// different day, update the list.  Load the date requested
 			// if it is not already loaded
 			mCurrentDate = date; 
+			System.out.println("Set Day>>>>>"+ date);
 			mAdapter.filterDay(date);
 			DateFormat formatter = new SimpleDateFormat("E, MMMM d");
+			System.out.println("actual day >>>>>"+ mCurrentDate);
 			mDate.setText(formatter.format(mCurrentDate));
 		} 
 		
@@ -439,7 +442,7 @@ public class ScheduleActivity extends AbstractActivity {
 	public void now(){
 		Date now = new Date();
 		if (now.before(mDates[0]) || now.after(mConference.end)) {
-			setDay(mDates[0]);
+			setDay((Date) mDates[0].clone());
 		} else {
 			// use now, since it will have the time of day for 
 			// jumping to the right time
@@ -545,7 +548,8 @@ public class ScheduleActivity extends AbstractActivity {
 		public void filterDay(Date date){
 			// Load the data for the requested day, load it from dataservice if needed
 			// construct a new date with just year,month,day since keys only have that set
-			Date load = new Date(date.getYear(), date.getMonth(), date.getDate());
+			// XXX adjust for timezone by setting time to noon
+			Date load = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
 		
 			if (mSchedule.containsKey(load)){
 				mItems = mSchedule.get(load).events;
@@ -570,6 +574,7 @@ public class ScheduleActivity extends AbstractActivity {
 					filtered.add(event);
 				}
 			}
+			
 			mFiltered = filtered; 
 			notifyDataSetChanged();
 			now(date);
@@ -615,7 +620,6 @@ public class ScheduleActivity extends AbstractActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			
 			Object item = mFiltered.get(position);
 			if (item instanceof Date) {
 				Date date = (Date)item;
@@ -644,7 +648,7 @@ public class ScheduleActivity extends AbstractActivity {
 					if (e.track != -1) {
 						TextView track_view = (TextView) v.findViewById(R.id.track);
 						Track track = mConference.tracks.get(e.track);
-						track_view.setTextColor(track.color);
+						track_view.setTextColor(Color.parseColor(track.color));
 						track_view.setText(track.name);
 					}
 				}

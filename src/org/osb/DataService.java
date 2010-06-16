@@ -79,7 +79,7 @@ public class DataService
 	 */
 	public Schedule getSchedule(Date date, boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", true);
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", force);
 		for (Event event : s.events)
 		{
 				if (event.description == null)
@@ -130,7 +130,6 @@ public class DataService
 	{
 		Gson gson = GsonFactory.createGson();
 		String json = getURL(uri, local_file, force);
-		//System.out.println(json);
 		return gson.fromJson(json, clazz);
 	}
 	
@@ -211,7 +210,7 @@ public class DataService
 				}
 			}
 		}
-		
+
 		return sb.toString();
 	}
 
