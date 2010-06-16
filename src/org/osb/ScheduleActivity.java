@@ -160,6 +160,7 @@ public class ScheduleActivity extends AbstractActivity {
 				
 				mHeader.setBackgroundColor(Color.parseColor(track.color));
 				mTitle.setText(event.title);
+				mTitle.setTextColor(Color.parseColor(track.color_text));
 				mLocation.setText(location.name);
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
@@ -420,10 +421,8 @@ public class ScheduleActivity extends AbstractActivity {
 			// different day, update the list.  Load the date requested
 			// if it is not already loaded
 			mCurrentDate = date; 
-			System.out.println("Set Day>>>>>"+ date);
 			mAdapter.filterDay(date);
 			DateFormat formatter = new SimpleDateFormat("E, MMMM d");
-			System.out.println("actual day >>>>>"+ mCurrentDate);
 			mDate.setText(formatter.format(mCurrentDate));
 		} 
 		
