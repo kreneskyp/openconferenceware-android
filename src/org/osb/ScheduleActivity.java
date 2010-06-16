@@ -35,17 +35,7 @@ import android.widget.ViewFlipper;
 
 
 public class ScheduleActivity extends AbstractActivity {
-
-	
-	private static final Date JUN1 = new Date(110, 5, 1);
-	private static final Date JUN2 = new Date(110, 5, 2);
-	private static final Date JUN3 = new Date(110, 5, 3);
-	private static final Date JUN4 = new Date(110, 5, 4);
-
-	private static final int MENU_JUN1 = 1;
-	private static final int MENU_JUN2 = 2;
-	private static final int MENU_JUN3 = 3;
-	private static final int MENU_JUN4 = 4;
+	private static final int MENU_DATE_BASE = 1000;
 	private static final int MENU_NEXT = 5;
 	private static final int MENU_PREV = 6;
 	private static final int MENU_ABOUT = 7;
@@ -384,11 +374,15 @@ public class ScheduleActivity extends AbstractActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
 		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
-	    dayMenu.add(0, MENU_JUN1, 0, "Tuesday, June 1");
-	    dayMenu.add(0, MENU_JUN2, 0, "Wednesday, June 2");
-	    dayMenu.add(0, MENU_JUN3, 0, "Thursday, June 3");
-	    dayMenu.add(0, MENU_JUN4, 0, "Friday, June 4");
-		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
+		
+		DateFormat formatter = new SimpleDateFormat("EEEE, MMMM d"); 
+		Date date;
+		for (int i=0; i<mDates.length; i++){
+			date = mDates[i];
+			dayMenu.add(0, MENU_DATE_BASE+i, 0, formatter.format(date));
+		}
+		
+	    menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
 	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
@@ -397,22 +391,12 @@ public class ScheduleActivity extends AbstractActivity {
 
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
+		int id = item.getItemId();
+		System.out.println("ITEM SELECTD : "+ id);
+	    switch (id) {
 	    case MENU_NOW:
 	        now();
 	        return true;
-	    case MENU_JUN1:
-	    	setDay(JUN1);
-	        return true;
-    	case MENU_JUN2:
-    		setDay(JUN2);
-	        return true;
-		case MENU_JUN3:
-			setDay(JUN3);
-    		return true;
-		case MENU_JUN4:
-			setDay(JUN4);
-			return true;
 		case MENU_PREV:
 			previous();
 			return true;
@@ -430,6 +414,13 @@ public class ScheduleActivity extends AbstractActivity {
 			    	}
 			}); 
 			return true;
+		default:
+			if (id >= MENU_DATE_BASE) {
+				// must be a date menu option.  all dates
+				// menu options are an index offset by MENU_DATE_BASE
+				setDay(mDates[item.getItemId()-MENU_DATE_BASE]);
+				return true;
+			}
 	    }
 	    return false;
 	}
@@ -567,21 +558,17 @@ public class ScheduleActivity extends AbstractActivity {
 		 * @param date - date to filter by
 		 */
 		public void filterDay(Date date){
-			
+			// Load the data for the requested day, load it from dataservice if needed
 			// construct a new date with just year,month,day since keys only have that set
-			try {
-				Date load = new Date(date.getYear(), date.getMonth(), date.getDate());
-			
-				if (mSchedule.containsKey(load)){
-					mItems = mSchedule.get(load).events;
-				} else {
-					DataService service = getDataService();
-					Schedule schedule = service.getSchedule(load, false);
-					mSchedule.put(load, schedule);
-					mItems = schedule.events;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			Date load = new Date(date.getYear(), date.getMonth(), date.getDate());
+		
+			if (mSchedule.containsKey(load)){
+				mItems = mSchedule.get(load).events;
+			} else {
+				DataService service = getDataService();
+				Schedule schedule = service.getSchedule(load, false);
+				mSchedule.put(load, schedule);
+				mItems = schedule.events;
 			}
 			
 			List<Event> items = mItems;
