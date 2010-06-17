@@ -11,9 +11,9 @@
         conference_dates - dates of the conference
         conference_tagline - tagline if any for the conference
     ================================================================ -->
-    <string name="conference_name"></string>
-    <string name="conference_dates"></string>
-    <string name="conference_tagline"></string>
+    <string name="conference_name">Open Source Bridge</string>
+    <string name="conference_dates">June 1–4, 2010 | Portland, Oregon</string>
+    <string name="conference_tagline">The conference for open source citizens</string>
     
     
     <!-- ================================================================     
