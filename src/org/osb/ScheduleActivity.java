@@ -564,13 +564,11 @@ public class ScheduleActivity extends AbstractActivity {
 			Date currentStart = null;
 			for (int i=0; i<size; i++){
 				Event event = items.get(i);
-				if(isSameDay(date, event.start)){
-					if(currentStart == null || event.start.after(currentStart)) {
-						currentStart = event.start;
-						filtered.add(currentStart);
-					}
-					filtered.add(event);
+				if(currentStart == null || event.start.after(currentStart)) {
+					currentStart = event.start;
+					filtered.add(currentStart);
 				}
+				filtered.add(event);
 			}
 			
 			mFiltered = filtered; 
