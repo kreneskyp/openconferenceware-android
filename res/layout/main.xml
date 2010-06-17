@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+>
+
+
 <ViewFlipper 
        android:id="@+id/flipper"
        android:layout_width="fill_parent"
        android:layout_height="fill_parent"
-       xmlns:android="http://schemas.android.com/apk/res/android"
+       
        android:background="#171717"
     >
     
@@ -48,3 +55,32 @@
     
     
 </ViewFlipper>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:background="@drawable/loading"
+        android:orientation="horizontal"
+        android:visibility="gone"
+    >
+        <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20px"
+        />
+    
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading"
+            android:textStyle="bold"
+            android:textSize="16px"
+            android:textColor="#000"
+        />
+    </LinearLayout>
+    
+
+</FrameLayout>
