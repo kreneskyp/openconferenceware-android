@@ -14,6 +14,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -167,7 +169,8 @@ public class ScheduleActivity extends AbstractActivity {
 				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
 				mTime.setText(timeString);
 				mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
-				mDescription.setText(event.description);
+				mDescription.setMovementMethod(LinkMovementMethod.getInstance());
+				mDescription.setText(Html.fromHtml(event.description));
 				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
 				mFlipper.setInAnimation(mInRight);
@@ -244,7 +247,8 @@ public class ScheduleActivity extends AbstractActivity {
 					TextView name = (TextView) view.findViewById(R.id.name);
 					name.setText(speaker.name);
 					TextView biography = (TextView) view.findViewById(R.id.biography);
-					biography.setText(speaker.biography);
+					biography.setMovementMethod(LinkMovementMethod.getInstance());
+					biography.setText(Html.fromHtml(speaker.biography));
 					
 					String twitter = speaker.twitter;
 					if (twitter != null && twitter != ""  && twitter != "null"){
