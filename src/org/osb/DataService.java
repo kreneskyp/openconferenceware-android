@@ -199,22 +199,10 @@ public class DataService
 			return null;
 		T obj = gson.fromJson(json, clazz);
 		
-		// cache serialized object to file
-		ObjectOutputStream out = null;
-		try{
-			out = new ObjectOutputStream(new FileOutputStream(file));
-			out.writeObject(obj);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		// cache serialized object to file in thread so it does not
+		// impact speed of rendering the UI
+		new WriteThread(file, obj).start();
+        
 		return obj;
 	}
 	
@@ -265,4 +253,37 @@ public class DataService
 		return json;
 	}
 
+	/**
+	 * Class for separating file writing from reading so that
+	 * the user interface can return quicker 
+	 * @author peter
+	 */
+	class WriteThread extends Thread {
+		File file;
+		Object obj;
+		
+		public WriteThread(File file, Object obj){
+			this.file = file;
+			this.obj = obj;
+		}
+		
+		public void run(){
+			ObjectOutputStream out = null;
+			try{
+				out = new ObjectOutputStream(new FileOutputStream(file));
+				out.writeObject(obj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (out != null) {
+					try {
+						out.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
 }
