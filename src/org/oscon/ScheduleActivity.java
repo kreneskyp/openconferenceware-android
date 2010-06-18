@@ -168,7 +168,6 @@ public class ScheduleActivity extends AbstractActivity {
         
         mShowBio.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
-                
                 mBio.removeAllViews();
                 Integer[] speaker_ids = mEvent.speaker_ids;
                 if (speaker_ids != null) {
@@ -212,9 +211,12 @@ public class ScheduleActivity extends AbstractActivity {
                     view = vi.inflate(R.layout.bio, null);
                     TextView name = (TextView) view.findViewById(R.id.name);
                     name.setText(speaker.name);
-                    TextView biography = (TextView) view.findViewById(R.id.biography);
-                    biography.setMovementMethod(LinkMovementMethod.getInstance());
-                    biography.setText(Html.fromHtml(speaker.biography));
+                    
+                    if (speaker.biography != null){
+	                    TextView biography = (TextView) view.findViewById(R.id.biography);
+	                    biography.setMovementMethod(LinkMovementMethod.getInstance());
+	                    biography.setText(Html.fromHtml(speaker.biography));
+                    }
                     
                     String twitter = speaker.twitter;
                     if (twitter != null && twitter != ""  && twitter != "null"){
@@ -580,9 +582,11 @@ public class ScheduleActivity extends AbstractActivity {
     private class EventAdapter extends ArrayAdapter<Event> {
         private List<Event> mItems;
         private List<Object> mFiltered;
+        private HashMap<Object, View> mViews;
         
         public EventAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
+            mViews = new HashMap<Object, View>();
             mItems = new ArrayList<Event>();
             mFiltered = new ArrayList<Object>();
         }
@@ -630,6 +634,7 @@ public class ScheduleActivity extends AbstractActivity {
                 filtered.add(event);
             }
             
+            mViews.clear();
             mFiltered = filtered; 
             mLoadDate = date;
             mHandler.post(new Runnable(){
@@ -680,6 +685,8 @@ public class ScheduleActivity extends AbstractActivity {
             return mFiltered.size();
         }
         
+        
+        
         /**
          * Renders an item in the schedule list
          */
@@ -687,7 +694,13 @@ public class ScheduleActivity extends AbstractActivity {
             View v = convertView;
             LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             Object item = mFiltered.get(position);
-            if (item instanceof Date) {
+            
+            // check view cache
+            if (mViews.containsKey(item)) {
+            	return mViews.get(item);
+            }
+            
+        	if (item instanceof Date) {
                 Date date = (Date)item;
                 v = vi.inflate(R.layout.list_slot, null);
                 TextView time = (TextView) v.findViewById(R.id.time);
@@ -699,7 +712,6 @@ public class ScheduleActivity extends AbstractActivity {
                 if (e != null) {
                     TextView title = (TextView) v.findViewById(R.id.title);
                     TextView locationView = (TextView) v.findViewById(R.id.location);
-                    //TextView time = (TextView) v.findViewById(R.id.time);
                     if (title != null) {
                         title.setText(e.title);
                     }
@@ -707,10 +719,7 @@ public class ScheduleActivity extends AbstractActivity {
                         Location location = mConference.locations.get(e.location);
                         locationView.setText(location.name);
                     }
-                    /*if (time != null) {
-                        DateFormat formatter = new SimpleDateFormat("h:mm");
-                        time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
-                    }*/
+
                     if (e.track != -1) {
                         TextView track_view = (TextView) v.findViewById(R.id.track);
                         Track track = mConference.tracks.get(e.track);
@@ -719,6 +728,8 @@ public class ScheduleActivity extends AbstractActivity {
                     }
                 }
             }
+        	
+        	mViews.put(item, v);
             return v;
         }
     }
