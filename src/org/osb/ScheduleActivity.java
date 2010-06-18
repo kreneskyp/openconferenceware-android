@@ -134,50 +134,19 @@ public class ScheduleActivity extends AbstractActivity {
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
+				mAdapter.mPosition = position;
 				Object item = mAdapter.mFiltered.get(position);
 				if (item instanceof Date) {
 					return;// ignore clicks on the dates
 				}
 				Event event = (Event) item;
-				Track track = mConference.tracks.get(event.track);
-				Location location = mConference.locations.get(event.location);
 				if (!event.details){
 					// load detailed info for this session
 					DataService service = getDataService();
 					event = service.getEvent(event.id, false);
 					mAdapter.mFiltered.set(position, event);
 				}
-				
-				String speaker_names = "";
-				Speaker speaker;
-				for(Integer sid: event.speaker_ids){
-					if (mSpeakers.containsKey(sid)){
-						speaker = mSpeakers.get(sid);
-					} else {
-						speaker = getDataService().getSpeaker(sid, false);
-						mSpeakers.put(sid, speaker);
-					}
-					if (speaker_names == "") {
-						speaker_names = speaker.name; 
-					} else {
-						speaker_names = speaker_names + ", " + speaker.name;
-					}
-				}
-				mSpeaker.setText(speaker_names);
-				
-				mHeader.setBackgroundColor(Color.parseColor(track.color));
-				mTitle.setText(event.title);
-				mTitle.setTextColor(Color.parseColor(track.color_text));
-				mLocation.setText(location.name);
-				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
-				DateFormat endFormat = new SimpleDateFormat("h:mm a");
-				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
-				mTime.setText(timeString);
-				mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
-				mDescription.setMovementMethod(LinkMovementMethod.getInstance());
-				mDescription.setText(Html.fromHtml(event.description));
-				show_description();
-				mDescriptionScroller.scrollTo(0, 0);
+				loadDescriptionView(event);
 				mFlipper.setInAnimation(mInRight);
                 mFlipper.setOutAnimation(mOutLeft);
                 mFlipper.showNext();
@@ -354,6 +323,43 @@ public class ScheduleActivity extends AbstractActivity {
 		mDescription.setVisibility(View.VISIBLE);
 	}
 	
+	private void loadDescriptionView(Event event){
+		Track track = mConference.tracks.get(event.track);
+		Location location = mConference.locations.get(event.location);
+		
+		// create list of speakers from all speaker objects
+		String speaker_names = "";
+		Speaker speaker;
+		for(Integer sid: event.speaker_ids){
+			if (mSpeakers.containsKey(sid)){
+				speaker = mSpeakers.get(sid);
+			} else {
+				speaker = getDataService().getSpeaker(sid, false);
+				mSpeakers.put(sid, speaker);
+			}
+			if (speaker_names == "") {
+				speaker_names = speaker.name; 
+			} else {
+				speaker_names = speaker_names + ", " + speaker.name;
+			}
+		}
+		mSpeaker.setText(speaker_names);
+		
+		mHeader.setBackgroundColor(Color.parseColor(track.color));
+		mTitle.setText(event.title);
+		mTitle.setTextColor(Color.parseColor(track.color_text));
+		mLocation.setText(location.name);
+		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
+		DateFormat endFormat = new SimpleDateFormat("h:mm a");
+		String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
+		mTime.setText(timeString);
+		mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
+		mDescription.setMovementMethod(LinkMovementMethod.getInstance());
+		mDescription.setText(Html.fromHtml(event.description));
+		show_description();
+		mDescriptionScroller.scrollTo(0, 0);
+	}
+	
 	/**
 	 * overridden to hook back button when on the detail page
 	 */
@@ -401,7 +407,11 @@ public class ScheduleActivity extends AbstractActivity {
 			showDialog(DIALOG_ABOUT);
 			return true;
 		case MENU_REFRESH:
-			new SetDayThread(mCurrentDate, true).start();
+			if (mDetail) {
+				reloadEvent();
+			} else {
+				new SetDayThread(mCurrentDate, true).start();
+			}
 			return true;
 		default:
 			if (id >= MENU_DATE_BASE) {
@@ -490,7 +500,7 @@ public class ScheduleActivity extends AbstractActivity {
 	}
 	
 	/**
-	 * Loads the osbridge schedule from a combination of ICal and json data
+	 * Loads the osbridge schedule
 	 * @param force - force reload
 	 */
 	private void loadSchedule(boolean force) {
@@ -500,6 +510,29 @@ public class ScheduleActivity extends AbstractActivity {
 		DataService service = getDataService();
 		mConference  = service.getConference(force);
 		mDates = mConference.getDates();
+	}
+	
+	
+	/**
+	 * Forces reload of an event 
+	 * @param id
+	 */
+	private void reloadEvent() {
+		// load detailed info for this session
+		DataService service = getDataService();
+		Event event = service.getEvent(mEvent.id, true);
+		Speaker speaker;
+		for(Integer sid: event.speaker_ids){
+			if (mSpeakers.containsKey(sid)){
+				speaker = mSpeakers.get(sid);
+			} else {
+				speaker = getDataService().getSpeaker(sid, true);
+				mSpeakers.put(sid, speaker);
+			}
+		}
+		mAdapter.mFiltered.set(mAdapter.mPosition, event);
+		mEvent = event;
+		loadDescriptionView(event);
 	}
 	
 	protected Dialog onCreateDialog(int id){
@@ -536,6 +569,7 @@ public class ScheduleActivity extends AbstractActivity {
 	private class EventAdapter extends ArrayAdapter<Event> {
 		private List<Event> mItems;
 		private List<Object> mFiltered;
+		private int mPosition = -1;
 		
 		public EventAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
@@ -636,6 +670,9 @@ public class ScheduleActivity extends AbstractActivity {
 			return mFiltered.size();
 		}
 		
+		/**
+		 * Renders an item in the schedule list
+		 */
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
