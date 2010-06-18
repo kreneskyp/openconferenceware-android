@@ -23,9 +23,9 @@ public class DataService
     private static final String EVENT_URI_BASE = "http://doors.osuosl.org:8000/session/";
     
 	// Cache timeouts in milliseconds
-	private static final long SCHEDULE_CACHE_TIMEOUT = 14400000;  // 4 hours
-	private static final long EVENT_CACHE_TIMEOUT = 14400000;    // 4 hours
-	private static final long SPEAKER_CACHE_TIMEOUT = 432000000;  // 5 days
+	private static final long SCHEDULE_CACHE_TIMEOUT = 14400000;     // 4 hours
+	private static final long EVENT_CACHE_TIMEOUT = 14400000;        // 4 hours
+	private static final long SPEAKER_CACHE_TIMEOUT = 432000000;     // 5 days
 	private static final long CONFERENCE_CACHE_TIMEOUT = 432000000;  // 5 days
 	
     private File dataDirectory;
