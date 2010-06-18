@@ -2,7 +2,7 @@
 	<TextView 
 	    android:id="@+id/title"
 	    android:layout_width="wrap_content"
-	    android:layout_weight="80"
+	    android:layout_weight="78"
 	    android:layout_height="wrap_content"
 	    android:minHeight="55dip"
 	    android:layout_marginTop="5px"
@@ -17,25 +17,25 @@
 	android:background="#222222"
 	android:layout_marginBottom="5px"
 	android:layout_marginTop="5px"
-	android:layout_marginRight="10px"
-    android:layout_marginLeft="10px"
+	android:layout_marginRight="8px"
+    android:layout_marginLeft="8px"
 
 	/>
 	
 	<LinearLayout 
-		android:layout_width="78dip"
+		android:layout_width="82dip"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="5px"
 		android:layout_marginBottom="5px"
-		android:layout_marginRight="5px"
+		android:layout_marginRight="4px"
 		android:orientation="vertical">
-	   <TextView
+	   <!--TextView
             android:id="@+id/time"
             android:layout_width="78dip"
             android:layout_height="wrap_content"
             android:layout_marginTop="5px"
             android:visibility="gone"
-            />
+            /-->
 		<TextView
 		    android:id="@+id/location"
 		    android:layout_width="wrap_content"

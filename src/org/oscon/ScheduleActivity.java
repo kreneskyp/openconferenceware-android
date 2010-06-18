@@ -699,7 +699,7 @@ public class ScheduleActivity extends AbstractActivity {
                 if (e != null) {
                     TextView title = (TextView) v.findViewById(R.id.title);
                     TextView locationView = (TextView) v.findViewById(R.id.location);
-                    TextView time = (TextView) v.findViewById(R.id.time);
+                    //TextView time = (TextView) v.findViewById(R.id.time);
                     if (title != null) {
                         title.setText(e.title);
                     }
@@ -707,10 +707,10 @@ public class ScheduleActivity extends AbstractActivity {
                         Location location = mConference.locations.get(e.location);
                         locationView.setText(location.name);
                     }
-                    if (time != null) {
+                    /*if (time != null) {
                         DateFormat formatter = new SimpleDateFormat("h:mm");
                         time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
-                    }
+                    }*/
                     if (e.track != -1) {
                         TextView track_view = (TextView) v.findViewById(R.id.track);
                         Track track = mConference.tracks.get(e.track);
