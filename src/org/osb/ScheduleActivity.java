@@ -439,8 +439,12 @@ public class ScheduleActivity extends AbstractActivity {
             mAdapter.filterDay(date, force);
         }
         
-        // take user back to the listings if not already there 
-        showList();
+        // take user back to the listings if not already there
+        mHandler.post(new Runnable(){
+            public void run(){
+            	showList();
+            }
+        });
     }
     
     /**
