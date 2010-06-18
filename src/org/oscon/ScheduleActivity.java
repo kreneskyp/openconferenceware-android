@@ -322,24 +322,30 @@ public class ScheduleActivity extends AbstractActivity {
         Track track = mConference.tracks.get(event.track);
         Location location = mConference.locations.get(event.location);
         
-        // create list of speakers from all speaker objects
+    	// create list of speakers from all speaker objects
+        
         String speaker_names = "";
-        Speaker speaker;
-        for(Integer sid: event.speaker_ids){
-            if (mSpeakers.containsKey(sid)){
-                speaker = mSpeakers.get(sid);
-            } else {
-                speaker = getDataService().getSpeaker(sid, false);
-                mSpeakers.put(sid, speaker);
-            }
-            if (speaker_names == "") {
-                speaker_names = speaker.name; 
-            } else {
-                speaker_names = speaker_names + ", " + speaker.name;
-            }
+        if (event.speaker_ids != null) {
+	        Speaker speaker;
+	        for(Integer sid: event.speaker_ids){
+	            if (mSpeakers.containsKey(sid)){
+	                speaker = mSpeakers.get(sid);
+	            } else {
+	                speaker = getDataService().getSpeaker(sid, false);
+	                if (speaker != null) {
+	                	mSpeakers.put(sid, speaker);
+	                }
+	            }
+	            if (speaker != null) {
+		            if (speaker_names == "") {
+		                speaker_names = speaker.name; 
+		            } else {
+		                speaker_names = speaker_names + ", " + speaker.name;
+		            }
+	            }
+	        }
         }
         mSpeaker.setText(speaker_names);
-        
         mHeader.setBackgroundColor(Color.parseColor(track.color));
         mTitle.setText(event.title);
         mTitle.setTextColor(Color.parseColor(track.color_text));
@@ -349,8 +355,12 @@ public class ScheduleActivity extends AbstractActivity {
         String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
         mTime.setText(timeString);
         mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
-        mDescription.setMovementMethod(LinkMovementMethod.getInstance());
-        mDescription.setText(Html.fromHtml(event.description));
+        if (event.description == null){
+        	mDescription.setText("");
+        } else {
+	        mDescription.setMovementMethod(LinkMovementMethod.getInstance());
+	        mDescription.setText(Html.fromHtml(event.description));
+        }
         show_description();
         mDescriptionScroller.scrollTo(0, 0);
     }
@@ -528,23 +538,29 @@ public class ScheduleActivity extends AbstractActivity {
         // update both the lists stored in the adapter
         if (!partialEvent.details || force){
             event = service.getEvent(partialEvent.id, force);
-            mAdapter.mFiltered.set(mAdapter.mFiltered.indexOf(partialEvent), event);
-            mAdapter.mItems.set(mAdapter.mItems.indexOf(partialEvent), event);
+            if (event == null) {
+            	// fall back to partial event if full event could not be loaded
+            	event = partialEvent;
+            } else {
+            	mAdapter.mFiltered.set(mAdapter.mFiltered.indexOf(partialEvent), event);
+            	mAdapter.mItems.set(mAdapter.mItems.indexOf(partialEvent), event);
+            }
         } else {
             event = partialEvent;
         }
         
         // preload the speakers for this event
-        Speaker speaker;
-        for(Integer sid: event.speaker_ids){
-            if (mSpeakers.containsKey(sid) && !force){
-                speaker = mSpeakers.get(sid);
-            } else {
-                speaker = getDataService().getSpeaker(sid, force);
-                mSpeakers.put(sid, speaker);
-            }
+        if (event.speaker_ids != null) {
+	        Speaker speaker;
+	        for(Integer sid: event.speaker_ids){
+	            if (mSpeakers.containsKey(sid) && !force){
+	                speaker = mSpeakers.get(sid);
+	            } else {
+	                speaker = getDataService().getSpeaker(sid, force);
+	                mSpeakers.put(sid, speaker);
+	            }
+	        }
         }
-        
         return event;
     }
     
@@ -617,8 +633,10 @@ public class ScheduleActivity extends AbstractActivity {
                 });
                 DataService service = getDataService();
                 Schedule schedule = service.getSchedule(load, force);
-                mSchedule.put(load, schedule);
-                mItems = schedule.events;
+                if (schedule != null) {
+                	mSchedule.put(load, schedule);
+                	mItems = schedule.events;
+                }
             }
             
             List<Event> items = mItems;
