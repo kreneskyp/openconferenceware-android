@@ -41,13 +41,7 @@ public class DataService
 	 * @return
 	 */
 	public Conference getConference(boolean force) {
-		Conference conference = null;
-		try{
-		    conference = getObject(Conference.class, CONFERENCE_URI, "conference.json", force, CONFERENCE_CACHE_TIMEOUT);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return conference;
+		return getObject(Conference.class, CONFERENCE_URI, "conference.json", force, CONFERENCE_CACHE_TIMEOUT);
 	}
 	
 	/**
@@ -58,19 +52,16 @@ public class DataService
 	 */
 	public Event getEvent(String event_id, boolean force){
 		Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", force, EVENT_CACHE_TIMEOUT);
-		event.details = true;
+		if (event != null){
+			event.details = true;
+		}
 		return event;
 	}
 	
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
 	{
-		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId, "speaker_"+speakerId+".json", force, SPEAKER_CACHE_TIMEOUT);
-		if (s.biography != null)
-		{
-			s.biography = s.biography.replace("\r", "");
-		}
-		return s;
+		return getObject(Speaker.class, SPEAKER_URI_BASE + speakerId, "speaker_"+speakerId+".json", force, SPEAKER_CACHE_TIMEOUT);
 	}
 	
 	/**
@@ -82,8 +73,9 @@ public class DataService
 	public Schedule getSchedule(Date date, boolean force)
 	{
 		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", force, SCHEDULE_CACHE_TIMEOUT);	
-		for (Event event : s.events)
-		{
+		if (s != null) {
+			for (Event event : s.events)
+			{
 				if (event.description == null)
 				{
 					event.description = "";
@@ -116,6 +108,7 @@ public class DataService
 					event.speakers = speakers.toString();
 				} 
 			}
+		}
 		return s;
 	}
 	
@@ -133,7 +126,7 @@ public class DataService
 	 */
 	private <T> T getObject(Class<T> clazz, String uri, String local_file, boolean force, long timeout)
 	{
-		T obj;
+		T obj = null;
 		// get file path for cached file
 		String dir = this.dataDirectory.getAbsolutePath();
 		File file = new File(dir+"/"+local_file);
@@ -155,7 +148,7 @@ public class DataService
 				// if it exists regardless of age. any data is better than no data
 				obj = getLocalObject(clazz, file);
 			}
-		}
+		}	
 		return obj;
 	}
 	
@@ -242,7 +235,7 @@ public class DataService
 			}
 			
 			json = sb.toString();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			json=null;
 		} finally {
