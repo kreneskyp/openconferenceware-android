@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class LaunchActivity extends AbstractActivity {
-        private final int SPLASH_DISPLAY_LENGTH = 100;
+        private final int SPLASH_DISPLAY_LENGTH = 500;
         /** Called when the activity is first created. */
         @Override
         public void onCreate(Bundle bundle) {
