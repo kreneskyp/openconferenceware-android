@@ -1,4 +1,4 @@
-package org.osb;
+package org.oscon;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

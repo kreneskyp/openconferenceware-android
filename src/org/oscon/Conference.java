@@ -1,4 +1,4 @@
-package org.osb;
+package org.oscon;
 
 import java.io.Serializable;
 import java.util.HashMap;

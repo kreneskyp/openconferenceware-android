@@ -1,5 +1,5 @@
 
-package org.osb;
+package org.oscon;
 
 import android.app.Activity;
 

@@ -1,4 +1,4 @@
-package org.osb;
+package org.oscon;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
