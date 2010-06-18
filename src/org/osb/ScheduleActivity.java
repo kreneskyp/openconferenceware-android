@@ -401,8 +401,7 @@ public class ScheduleActivity extends AbstractActivity {
 			showDialog(DIALOG_ABOUT);
 			return true;
 		case MENU_REFRESH:
-			loadSchedule(true);
-			now();
+			new SetDayThread(mCurrentDate, true).start();
 			return true;
 		default:
 			if (id >= MENU_DATE_BASE) {
@@ -416,9 +415,13 @@ public class ScheduleActivity extends AbstractActivity {
 	    return false;
 	}
 	
+	public void setDay(Date date){
+		setDay(date, false);
+	}
+	
 	/* sets the current day, filtering the list if need be */
-	public void setDay(Date date) {
-		if (isSameDay(mCurrentDate, date)) {
+	public void setDay(Date date, boolean force) {
+		if (isSameDay(mCurrentDate, date) && !force) {
 			// same day, just jump to current time
 			mAdapter.now(date);
 		} else {
@@ -487,14 +490,12 @@ public class ScheduleActivity extends AbstractActivity {
 	 * @param force - force reload
 	 */
 	private void loadSchedule(boolean force) {
-		System.out.println("================Schedule================");
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		DataService service = getDataService();
 		mConference  = service.getConference(force);
 		mDates = mConference.getDates();
-		System.out.println("----------------Schedule----------------");
 	}
 	
 	protected Dialog onCreateDialog(int id){
@@ -710,12 +711,29 @@ public class ScheduleActivity extends AbstractActivity {
 	 */
 	class SetDayThread extends Thread {
 		Date date;
+		boolean reload;
 		public SetDayThread(Date date) {
 			this.date = date;
+			this.reload = false;
+		}
+		public SetDayThread(Date date, boolean reload) {
+			this.date = date;
+			this.reload = reload;
 		}
 		public void run(){
 			try{
-				setDay(date);
+				if (reload){
+					mHandler.post(new Runnable(){
+						public void run(){showDialog(DIALOG_LOADING);}
+					});
+					// always reload the conference object when reloading
+					// a schedule object. remove schedule to force its 
+					// reloading by setDay()
+					loadSchedule(true);
+					Date now = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
+					mSchedule.remove(now);
+				}
+				setDay(date, true);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
