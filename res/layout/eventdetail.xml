@@ -114,6 +114,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/button_foursquare"
                             android:layout_gravity="right"
+                            android:visibility="gone"
                         />
                     
                     
