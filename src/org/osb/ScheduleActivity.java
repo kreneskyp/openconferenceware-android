@@ -428,8 +428,8 @@ public class ScheduleActivity extends AbstractActivity {
 			// different day, update the list.  Load the date requested
 			// if it is not already loaded
 			mCurrentDate = date; 
-			mAdapter.filterDay(date);
-		} 
+			mAdapter.filterDay(date, force);
+		}
 		
 		// take user back to the listings if not already there 
 		showList();
@@ -552,20 +552,19 @@ public class ScheduleActivity extends AbstractActivity {
 		 * the dataservice
 		 * @param date - date to filter by
 		 */
-		public void filterDay(Date date){
+		public void filterDay(Date date, boolean force){
 			// Load the data for the requested day, load it from dataservice if needed
 			// construct a new date with just year,month,day since keys only have that set
 			// XXX adjust for timezone by setting time to noon
 			Date load = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
-		
-			if (mSchedule.containsKey(load)){
+			if (mSchedule.containsKey(load) && !force){
 				mItems = mSchedule.get(load).events;
 			} else {
 				mHandler.post(new Runnable(){
 					public void run(){showDialog(DIALOG_LOADING);}
 				});
 				DataService service = getDataService();
-				Schedule schedule = service.getSchedule(load, false);
+				Schedule schedule = service.getSchedule(load, force);
 				mSchedule.put(load, schedule);
 				mItems = schedule.events;
 			}
@@ -706,7 +705,7 @@ public class ScheduleActivity extends AbstractActivity {
     }
 	
 	/**
-	 * thread for setting schedule day.  threadded so dialogs
+	 * thread for setting schedule day.  threaded so dialogs
 	 * can return immediately.
 	 */
 	class SetDayThread extends Thread {
@@ -727,13 +726,9 @@ public class ScheduleActivity extends AbstractActivity {
 						public void run(){showDialog(DIALOG_LOADING);}
 					});
 					// always reload the conference object when reloading
-					// a schedule object. remove schedule to force its 
-					// reloading by setDay()
 					loadSchedule(true);
-					Date now = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
-					mSchedule.remove(now);
 				}
-				setDay(date, true);
+				setDay(date, reload);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
