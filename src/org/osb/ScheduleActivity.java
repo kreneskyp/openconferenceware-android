@@ -423,7 +423,11 @@ public class ScheduleActivity extends AbstractActivity {
 	public void setDay(Date date, boolean force) {
 		if (isSameDay(mCurrentDate, date) && !force) {
 			// same day, just jump to current time
-			mAdapter.now(date);
+			mHandler.post(new Runnable(){
+				public void run(){
+					mAdapter.now(mCurrentDate);
+				}
+			});
 		} else {
 			// different day, update the list.  Load the date requested
 			// if it is not already loaded
