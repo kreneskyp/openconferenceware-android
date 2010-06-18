@@ -134,23 +134,15 @@ public class ScheduleActivity extends AbstractActivity {
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
-				mAdapter.mPosition = position;
 				Object item = mAdapter.mFiltered.get(position);
 				if (item instanceof Date) {
 					return;// ignore clicks on the dates
 				}
-				Event event = (Event) item;
-				if (!event.details){
-					// load detailed info for this session
-					DataService service = getDataService();
-					event = service.getEvent(event.id, false);
-					mAdapter.mFiltered.set(position, event);
-				}
-				loadDescriptionView(event);
+				mEvent = loadEvent((Event) item, false);
+				loadDescriptionView();
 				mFlipper.setInAnimation(mInRight);
                 mFlipper.setOutAnimation(mOutLeft);
                 mFlipper.showNext();
-                mEvent = event;
                 mDetail = true;
 			}
 		});
@@ -323,7 +315,8 @@ public class ScheduleActivity extends AbstractActivity {
 		mDescription.setVisibility(View.VISIBLE);
 	}
 	
-	private void loadDescriptionView(Event event){
+	private void loadDescriptionView(){
+		Event event = mEvent;
 		Track track = mConference.tracks.get(event.track);
 		Location location = mConference.locations.get(event.location);
 		
@@ -408,7 +401,8 @@ public class ScheduleActivity extends AbstractActivity {
 			return true;
 		case MENU_REFRESH:
 			if (mDetail) {
-				reloadEvent();
+				mEvent = loadEvent(mEvent, true);
+				loadDescriptionView();
 			} else {
 				new SetDayThread(mCurrentDate, true).start();
 			}
@@ -514,25 +508,38 @@ public class ScheduleActivity extends AbstractActivity {
 	
 	
 	/**
-	 * Forces reload of an event 
-	 * @param id
+	 * Loads detailed info for an event.  This should only be called
+	 * for events from the currently loaded day.
+	 * 
+	 * @param event - partially loaded event from schedule object
+	 * @param force - force reload of data.
 	 */
-	private void reloadEvent() {
-		// load detailed info for this session
+	private Event loadEvent(Event partialEvent, boolean force) {
 		DataService service = getDataService();
-		Event event = service.getEvent(mEvent.id, true);
+		Event event;
+		
+		// load detailed info if needed
+		// update both the lists stored in the adapter
+		if (!partialEvent.details || force){
+			event = service.getEvent(partialEvent.id, force);
+			mAdapter.mFiltered.set(mAdapter.mFiltered.indexOf(partialEvent), event);
+			mAdapter.mItems.set(mAdapter.mItems.indexOf(partialEvent), event);
+		} else {
+			event = partialEvent;
+		}
+		
+		// preload the speakers for this event
 		Speaker speaker;
 		for(Integer sid: event.speaker_ids){
-			if (mSpeakers.containsKey(sid)){
+			if (mSpeakers.containsKey(sid) && !force){
 				speaker = mSpeakers.get(sid);
 			} else {
-				speaker = getDataService().getSpeaker(sid, true);
+				speaker = getDataService().getSpeaker(sid, force);
 				mSpeakers.put(sid, speaker);
 			}
 		}
-		mAdapter.mFiltered.set(mAdapter.mPosition, event);
-		mEvent = event;
-		loadDescriptionView(event);
+		
+		return event;
 	}
 	
 	protected Dialog onCreateDialog(int id){
@@ -569,7 +576,6 @@ public class ScheduleActivity extends AbstractActivity {
 	private class EventAdapter extends ArrayAdapter<Event> {
 		private List<Event> mItems;
 		private List<Object> mFiltered;
-		private int mPosition = -1;
 		
 		public EventAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
