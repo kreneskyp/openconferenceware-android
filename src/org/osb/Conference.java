@@ -1,9 +1,11 @@
 package org.osb;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Date;
 
-public class Conference {
+public class Conference  implements Serializable{
+	private static final long serialVersionUID = 8942450052954646740L;
 	public Date start;
 	public Date end;
 	public HashMap<Integer, Track> tracks = new HashMap<Integer, Track>();

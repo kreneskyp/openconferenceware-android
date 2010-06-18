@@ -1,10 +1,16 @@
 package org.osb;
+import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Event {
+public class Event implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3505553617651473360L;
+
 	// flag for determining if all details have been loaded
 	// for this object.
 	public boolean details = false;
@@ -40,8 +46,6 @@ public class Event {
 		speaker_ids = new Integer[0];
 		user_titles = new String[0];
 	}
-    
-	
 	
     @Override
     public String toString()

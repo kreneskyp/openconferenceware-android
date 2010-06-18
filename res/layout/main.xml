@@ -3,8 +3,8 @@
        android:id="@+id/flipper"
        android:layout_width="fill_parent"
        android:layout_height="fill_parent"
-       xmlns:android="http://schemas.android.com/apk/res/android"
        android:background="#171717"
+       xmlns:android="http://schemas.android.com/apk/res/android"
     >
     
     <LinearLayout 
@@ -45,6 +45,5 @@
     </LinearLayout>
     
     <include layout="@layout/eventdetail"/>
-    
-    
 </ViewFlipper>
+    
