@@ -21,9 +21,13 @@ public class DataService
 	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/sessions_day/";
     private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
     private static final String EVENT_URI_BASE = "http://doors.osuosl.org:8000/session/";
-	// Cache files for 2 hours (in milliseconds)
-	private static final long CACHE_TIMEOUT = 7200000;
     
+	// Cache timeouts in milliseconds
+	private static final long SCHEDULE_CACHE_TIMEOUT = 14400000;  // 4 hours
+	private static final long EVENT_CACHE_TIMEOUT = 14400000;    // 4 hours
+	private static final long SPEAKER_CACHE_TIMEOUT = 432000000;  // 5 days
+	private static final long CONFERENCE_CACHE_TIMEOUT = 432000000;  // 5 days
+	
     private File dataDirectory;
     
 	public DataService(File dataDir)
@@ -39,7 +43,7 @@ public class DataService
 	public Conference getConference(boolean force) {
 		Conference conference = null;
 		try{
-		    conference = getObject(Conference.class, CONFERENCE_URI, "conference.json", force);
+		    conference = getObject(Conference.class, CONFERENCE_URI, "conference.json", force, CONFERENCE_CACHE_TIMEOUT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,7 +57,7 @@ public class DataService
 	 * @return
 	 */
 	public Event getEvent(String event_id, boolean force){
-		Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", force);
+		Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", force, EVENT_CACHE_TIMEOUT);
 		event.details = true;
 		return event;
 	}
@@ -61,7 +65,7 @@ public class DataService
 	
 	public Speaker getSpeaker(Integer speakerId, boolean force)
 	{
-		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId, "speaker_"+speakerId+".json", force);
+		Speaker s = getObject(Speaker.class, SPEAKER_URI_BASE + speakerId, "speaker_"+speakerId+".json", force, SPEAKER_CACHE_TIMEOUT);
 		if (s.biography != null)
 		{
 			s.biography = s.biography.replace("\r", "");
@@ -77,7 +81,7 @@ public class DataService
 	 */
 	public Schedule getSchedule(Date date, boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", force);	
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", force, SCHEDULE_CACHE_TIMEOUT);	
 		for (Event event : s.events)
 		{
 				if (event.description == null)
@@ -127,13 +131,14 @@ public class DataService
 	 * @param force - ignore cache, force remote retrieval
 	 * @return fetched object
 	 */
-	private <T> T getObject(Class<T> clazz, String uri, String local_file, boolean force)
+	private <T> T getObject(Class<T> clazz, String uri, String local_file, boolean force, long timeout)
 	{
 		T obj;
 		// get file path for cached file
 		String dir = this.dataDirectory.getAbsolutePath();
 		File file = new File(dir+"/"+local_file);
-		if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
+		
+		if (file.exists() && file.lastModified()+timeout > System.currentTimeMillis() && !force){
 			// file was cached and cache hasn't expire, load local file
 			try {
 				obj = getLocalObject(clazz, file);
