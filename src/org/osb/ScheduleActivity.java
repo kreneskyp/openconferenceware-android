@@ -7,6 +7,7 @@ import java.util.*;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -45,8 +46,12 @@ public class ScheduleActivity extends AbstractActivity {
 	private static final int MENU_NOW = 8;
 	private static final int MENU_REFRESH = 9;
 	
+	private static final int DIALOG_ABOUT = 1;
+	private static final int DIALOG_LOADING = 2;
+	
 	// state
 	Date mCurrentDate;
+	Date mLoadDate;
 	TextView mDate;
 	boolean mDetail = false;
 	Handler mHandler; 
@@ -332,11 +337,16 @@ public class ScheduleActivity extends AbstractActivity {
 			}
         });
         
+        mAdapter = new EventAdapter(this, R.layout.listevent);
+        mEvents.setAdapter(mAdapter);
+        
         // spawn loading into separate thread
         mHandler.post(new Runnable() {
 		    public void run() {
+		    	//showDialog(DIALOG_LOADING);
 		    	loadSchedule(false);
 		    	now();
+		    	//removeDialog(DIALOG_LOADING);
 		    	}
 		});
     }
@@ -394,7 +404,7 @@ public class ScheduleActivity extends AbstractActivity {
 			next();
 			return true;
 		case MENU_ABOUT:
-			showDialog(0);
+			showDialog(DIALOG_ABOUT);
 			return true;
 		case MENU_REFRESH:
 			mHandler.post(new Runnable() {
@@ -408,7 +418,8 @@ public class ScheduleActivity extends AbstractActivity {
 			if (id >= MENU_DATE_BASE) {
 				// must be a date menu option.  all dates
 				// menu options are an index offset by MENU_DATE_BASE
-				setDay(mDates[item.getItemId()-MENU_DATE_BASE]);
+				//closeOptionsMenu();
+				new SetDayThread(mDates[item.getItemId()-MENU_DATE_BASE]).start(); 
 				return true;
 			}
 	    }
@@ -425,8 +436,6 @@ public class ScheduleActivity extends AbstractActivity {
 			// if it is not already loaded
 			mCurrentDate = date; 
 			mAdapter.filterDay(date);
-			DateFormat formatter = new SimpleDateFormat("E, MMMM d");
-			mDate.setText(formatter.format(mCurrentDate));
 		} 
 		
 		// take user back to the listings if not already there 
@@ -442,27 +451,22 @@ public class ScheduleActivity extends AbstractActivity {
 	 *      currently underway
 	 */
 	public void now(){
+		// use now, since it will have the time of day for 
+		// jumping to the right time
 		Date now = new Date();
 		if (now.before(mDates[0]) || now.after(mConference.end)) {
-			setDay((Date) mDates[0].clone());
-		} else {
-			// use now, since it will have the time of day for 
-			// jumping to the right time
-			setDay(now);
-		}
+			now = (Date) mDates[0].clone();
+		} 
+		new SetDayThread(now).start();
 	}
 	
 	/**
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-		try {
-			if (!isSameDay(mCurrentDate, mConference.end)) {
-				Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()+1);
-				setDay(load);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!isSameDay(mCurrentDate, mConference.end)) {
+			Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()+1);
+			new SetDayThread(load).start();
 		}
 	}
 	
@@ -472,7 +476,7 @@ public class ScheduleActivity extends AbstractActivity {
 	public void previous() {
 		if (!isSameDay(mCurrentDate, mConference.start)) {
 			Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()-1);
-			setDay(load);
+			new SetDayThread(load).start();
 		}
 	}
 	
@@ -499,27 +503,35 @@ public class ScheduleActivity extends AbstractActivity {
 		mCurrentDate = new Date(1900, 0, 0);
 		DataService service = getDataService();
 		mConference  = service.getConference(force);
-		try {
 		mDates = mConference.getDates();
-		mAdapter = new EventAdapter(this, R.layout.listevent, new ArrayList<Event>());
-        mEvents.setAdapter(mAdapter);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		System.out.println("----------------Schedule----------------");
 	}
 	
 	protected Dialog onCreateDialog(int id){
-        Context context = getApplicationContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.about, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("About");
-        builder.setCancelable(true);
-        builder.setView(v);
-        builder.setIcon(android.R.drawable.ic_dialog_info);
-        final AlertDialog alert = builder.create();
-        return alert;
+		Context context = getApplicationContext();
+        
+		switch (id) {
+		case DIALOG_ABOUT:
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+	        View view = inflater.inflate(R.layout.about, null);
+	        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setTitle("About");
+	        builder.setCancelable(true);
+	        builder.setView(view);
+	        builder.setIcon(android.R.drawable.ic_dialog_info);
+	        return builder.create();
+	        
+		case DIALOG_LOADING:
+			ProgressDialog progressDialog;
+			progressDialog = new ProgressDialog(this);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progressDialog.setMessage("Loading...");
+			progressDialog.setCancelable(true);
+			return progressDialog;
+			
+		default:
+			return null;
+		}
     }	
 	
 	/**
@@ -530,13 +542,19 @@ public class ScheduleActivity extends AbstractActivity {
 		private List<Event> mItems;
 		private List<Object> mFiltered;
 		
+		public EventAdapter(Context context, int textViewResourceId) {
+			super(context, textViewResourceId);
+			mItems = new ArrayList<Event>();
+			mFiltered = new ArrayList<Object>();
+		}
+		
 		public EventAdapter(Context context, int textViewResourceId,
 				List<Event> items) {
 			super(context, textViewResourceId, items);
 			mItems = items;
 			mFiltered = new ArrayList<Object>();
-		}
-
+		}		
+		
 		/**
 		 * Sets elements to the current schedule.  This will use
 		 * cached data if already loaded.  Else it will load it from
@@ -552,6 +570,9 @@ public class ScheduleActivity extends AbstractActivity {
 			if (mSchedule.containsKey(load)){
 				mItems = mSchedule.get(load).events;
 			} else {
+				mHandler.post(new Runnable(){
+					public void run(){showDialog(DIALOG_LOADING);}
+				});
 				DataService service = getDataService();
 				Schedule schedule = service.getSchedule(load, false);
 				mSchedule.put(load, schedule);
@@ -572,8 +593,16 @@ public class ScheduleActivity extends AbstractActivity {
 			}
 			
 			mFiltered = filtered; 
-			notifyDataSetChanged();
-			now(date);
+			mLoadDate = date;
+			mHandler.post(new Runnable(){
+				public void run(){
+					DateFormat formatter = new SimpleDateFormat("E, MMMM d");
+					mDate.setText(formatter.format(mCurrentDate));
+					notifyDataSetChanged();
+					now(mLoadDate);
+					removeDialog(DIALOG_LOADING);
+				}
+			});
 		}
 		
 		/**
@@ -684,4 +713,22 @@ public class ScheduleActivity extends AbstractActivity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+	
+	/**
+	 * thread for setting schedule day.  threadded so dialogs
+	 * can return immediately.
+	 */
+	class SetDayThread extends Thread {
+		Date date;
+		public SetDayThread(Date date) {
+			this.date = date;
+		}
+		public void run(){
+			try{
+				setDay(date);
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
 }
