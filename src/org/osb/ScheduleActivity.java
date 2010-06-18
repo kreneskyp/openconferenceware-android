@@ -341,14 +341,8 @@ public class ScheduleActivity extends AbstractActivity {
         mEvents.setAdapter(mAdapter);
         
         // spawn loading into separate thread
-        mHandler.post(new Runnable() {
-		    public void run() {
-		    	//showDialog(DIALOG_LOADING);
-		    	loadSchedule(false);
-		    	now();
-		    	//removeDialog(DIALOG_LOADING);
-		    	}
-		});
+        loadSchedule(false);
+		now();
     }
 	
 	/**
@@ -407,12 +401,8 @@ public class ScheduleActivity extends AbstractActivity {
 			showDialog(DIALOG_ABOUT);
 			return true;
 		case MENU_REFRESH:
-			mHandler.post(new Runnable() {
-			    public void run() { 
-			    	loadSchedule(true);
-			    	now();
-			    	}
-			}); 
+			loadSchedule(true);
+			now();
 			return true;
 		default:
 			if (id >= MENU_DATE_BASE) {
