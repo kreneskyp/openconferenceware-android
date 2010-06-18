@@ -168,7 +168,6 @@ public class ScheduleActivity extends AbstractActivity {
         
         mShowBio.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
-                
                 mBio.removeAllViews();
                 Integer[] speaker_ids = mEvent.speaker_ids;
                 if (speaker_ids != null) {
@@ -212,9 +211,12 @@ public class ScheduleActivity extends AbstractActivity {
                     view = vi.inflate(R.layout.bio, null);
                     TextView name = (TextView) view.findViewById(R.id.name);
                     name.setText(speaker.name);
-                    TextView biography = (TextView) view.findViewById(R.id.biography);
-                    biography.setMovementMethod(LinkMovementMethod.getInstance());
-                    biography.setText(Html.fromHtml(speaker.biography));
+                    
+                    if (speaker.biography != null){
+	                    TextView biography = (TextView) view.findViewById(R.id.biography);
+	                    biography.setMovementMethod(LinkMovementMethod.getInstance());
+	                    biography.setText(Html.fromHtml(speaker.biography));
+                    }
                     
                     String twitter = speaker.twitter;
                     if (twitter != null && twitter != ""  && twitter != "null"){
