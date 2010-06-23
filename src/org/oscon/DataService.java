@@ -11,7 +11,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import android.content.res.Resources;
 
 import com.google.gson.Gson;
 
@@ -29,10 +33,14 @@ public class DataService
 	private static final long CONFERENCE_CACHE_TIMEOUT = 432000000;  // 5 days
 	
     private File dataDirectory;
+    private Resources resources;
+    private String packageName;
     
-	public DataService(File dataDir)
+	public DataService(File dataDir, Resources resources, String packageName)
 	{
 		this.dataDirectory = dataDir;
+		this.resources = resources;
+		this.packageName = packageName;
 	}
 	
 	/**
@@ -72,7 +80,8 @@ public class DataService
 	 */
 	public Schedule getSchedule(Date date, boolean force)
 	{
-		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+date.getTime()+".json", force, SCHEDULE_CACHE_TIMEOUT);	
+		DateFormat formatter = new SimpleDateFormat("yyyy_MM_dd");
+		Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+formatter.format(date)+".json", force, SCHEDULE_CACHE_TIMEOUT);	
 		if (s != null) {
 			for (Event event : s.events)
 			{
@@ -139,7 +148,6 @@ public class DataService
 				// error loading local file.
 				// fall back to loading from the source uri
 				obj = getRemoteObject(clazz, uri, file);
-				e.printStackTrace();
 			}
 		} else {
 			obj = getRemoteObject(clazz, uri, file);
@@ -148,7 +156,13 @@ public class DataService
 				// if it exists regardless of age. any data is better than no data
 				obj = getLocalObject(clazz, file);
 			}
-		}	
+		}
+		
+		// last ditch effort, load pre-packaged data
+		if (obj == null) {
+			obj = getPreloadedObject(clazz, file, local_file);
+		}
+		
 		return obj;
 	}
 	
@@ -177,6 +191,7 @@ public class DataService
 				}
 			}
 		}
+		
 		return obj;
 	}
 	
@@ -204,6 +219,54 @@ public class DataService
 		return obj;
 	}
 	
+	
+	/**
+	 * Loads data from a preloaded files.  preloaded files are shipped with the
+	 * app as a last resort to load data when there is no network available.
+	 * @param <T> - class that is being loaded
+	 * @param clazz - class that is being loaded
+	 * @param uri - uri to retrieve object from
+	 * @param file - file to cache object to.
+	 * @return object, or null if object can't be loaded
+	 */
+	private <T> T getPreloadedObject(Class<T> clazz, File file, String filename) {
+		T obj = null;
+		Gson gson = GsonFactory.createGson();
+		String json = null;
+		InputStream is = null;
+		String line;
+		StringBuilder sb = new StringBuilder();
+		try{
+			// read entire file
+			is = resources.openRawResource(resources.getIdentifier(filename.substring(0,filename.length()-5), "raw", packageName));
+			BufferedReader br = new BufferedReader(new InputStreamReader(is), 8192);
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			json = sb.toString();
+			if (json != null)
+				obj = gson.fromJson(json, clazz);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// cache serialized object to file in thread so it does not
+		// impact speed of rendering the UI
+		new WriteThread(file, obj).start();
+        
+		return obj;
+	}
+	
+	
 	/**
 	 * fetches a url and returns the response as a string. 
 	 * @param uri - a uri beginning with http://
@@ -228,7 +291,7 @@ public class DataService
 			conn.setUseCaches(false);
 			is = conn.getInputStream();
 
-			// read entire file, write cache at same time if we are fetching from the remote uri
+			// read entire file
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
 			while ((line = br.readLine()) != null) {
 				sb.append(line);

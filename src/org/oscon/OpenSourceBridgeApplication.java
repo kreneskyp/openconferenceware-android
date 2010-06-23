@@ -15,7 +15,7 @@ public class OpenSourceBridgeApplication
 	{
 		super.onCreate();
 		
-		service = new DataService(this.getFilesDir());
+		service = new DataService(this.getFilesDir(), this.getResources(), getPackageName());
 		
 		Thread.setDefaultUncaughtExceptionHandler(this);
 	}

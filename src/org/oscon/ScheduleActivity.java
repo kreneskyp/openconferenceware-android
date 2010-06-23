@@ -598,11 +598,9 @@ public class ScheduleActivity extends AbstractActivity {
     private class EventAdapter extends ArrayAdapter<Event> {
         private List<Event> mItems;
         private List<Object> mFiltered;
-        private HashMap<Object, View> mViews;
         
         public EventAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
-            mViews = new HashMap<Object, View>();
             mItems = new ArrayList<Event>();
             mFiltered = new ArrayList<Object>();
         }
@@ -652,7 +650,6 @@ public class ScheduleActivity extends AbstractActivity {
                 filtered.add(event);
             }
             
-            mViews.clear();
             mFiltered = filtered; 
             mLoadDate = date;
             mHandler.post(new Runnable(){
@@ -713,11 +710,6 @@ public class ScheduleActivity extends AbstractActivity {
             LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             Object item = mFiltered.get(position);
             
-            // check view cache
-            if (mViews.containsKey(item)) {
-            	return mViews.get(item);
-            }
-            
         	if (item instanceof Date) {
                 Date date = (Date)item;
                 v = vi.inflate(R.layout.list_slot, null);
@@ -747,7 +739,6 @@ public class ScheduleActivity extends AbstractActivity {
                 }
             }
         	
-        	mViews.put(item, v);
             return v;
         }
     }
