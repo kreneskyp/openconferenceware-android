@@ -9,13 +9,10 @@ public class GsonFactory
 {
 	static public Gson createGson()
 	{
-
-		GsonBuilder builder = new GsonBuilder();
-		
-		Gson gson = builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'")
+		final GsonBuilder builder = new GsonBuilder();
+		final Gson gson = builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'")
 						.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 						.create();
-		
 		return gson;
 	}
 }
