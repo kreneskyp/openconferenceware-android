@@ -76,7 +76,7 @@ public class DataService
      * @return
      */
     public Event getEvent(String event_id, boolean force){
-        Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", force, EVENT_CACHE_TIMEOUT);
+        final Event event = getObject(Event.class, EVENT_URI_BASE+event_id, "event_"+event_id+".json", force, EVENT_CACHE_TIMEOUT);
         if (event != null){
             event.details = true;
         }
@@ -97,8 +97,9 @@ public class DataService
      */
     public Schedule getSchedule(Date date, boolean force)
     {
-        DateFormat formatter = new SimpleDateFormat("yyyy_MM_dd");
-        Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+formatter.format(date)+".json", force, SCHEDULE_CACHE_TIMEOUT);    
+        final DateFormat formatter = new SimpleDateFormat("yyyy_MM_dd");
+        final Schedule s = getObject(Schedule.class, SCHEDULE_URI+date.getTime(), "schedule_"+formatter.format(date)+".json", force, SCHEDULE_CACHE_TIMEOUT);    
+        StringBuilder speakers;
         if (s != null) {
             for (Event event : s.events)
             {
@@ -120,7 +121,7 @@ public class DataService
                 }
 
                 if (event.user_titles != null ) {
-                    StringBuilder speakers = new StringBuilder();
+                    speakers = new StringBuilder();
                     for (int z = 0; z < event.user_titles.length; z++) {
                         String speaker = event.user_titles[z];
                         
@@ -154,8 +155,8 @@ public class DataService
     {
         T obj = null;
         // get file path for cached file
-        String dir = this.dataDirectory.getAbsolutePath();
-        File file = new File(dir+"/"+local_file);
+        final String dir = this.dataDirectory.getAbsolutePath();
+        final File file = new File(dir+"/"+local_file);
         
         if (file.exists() && file.lastModified()+timeout > System.currentTimeMillis() && !force){
             // file was cached and cache hasn't expire, load local file
@@ -223,11 +224,11 @@ public class DataService
      * @return object, or null if object can't be loaded
      */
     private <T> T getRemoteObject(Class<T> clazz, String uri, File file) {
-        Gson gson = GsonFactory.createGson();
-        String json = getURL(uri);
+        final Gson gson = GsonFactory.createGson();
+        final String json = getURL(uri);
         if (json == null)
             return null;
-        T obj = gson.fromJson(json, clazz);
+        final T obj = gson.fromJson(json, clazz);
         
         // cache serialized object to file in thread so it does not
         // impact speed of rendering the UI
@@ -248,15 +249,15 @@ public class DataService
      */
     private <T> T getPreloadedObject(Class<T> clazz, File file, String filename) {
         T obj = null;
-        Gson gson = GsonFactory.createGson();
+        final Gson gson = GsonFactory.createGson();
         String json = null;
         InputStream is = null;
         String line;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         try{
             // read entire file
             is = resources.openRawResource(resources.getIdentifier(filename.substring(0,filename.length()-5), "raw", packageName));
-            BufferedReader br = new BufferedReader(new InputStreamReader(is), 8192);
+            final BufferedReader br = new BufferedReader(new InputStreamReader(is), 8192);
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
@@ -297,7 +298,7 @@ public class DataService
         
         // get file path for cached file
         String line;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         String json = null;
         try {
             // create and execute GET request
@@ -322,7 +323,7 @@ public class DataService
             }
             
             // read entire file
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+            final BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }

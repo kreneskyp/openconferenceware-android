@@ -17,7 +17,7 @@ public class LaunchActivity extends AbstractActivity {
 
                         public void run() {
                                 /* Create an Intent that will start the Menu-Activity. */
-                                Intent mainIntent = new Intent(LaunchActivity.this, ScheduleActivity.class);
+                                final Intent mainIntent = new Intent(LaunchActivity.this, ScheduleActivity.class);
                                 LaunchActivity.this.startActivity(mainIntent);
                                 LaunchActivity.this.finish();
                         }

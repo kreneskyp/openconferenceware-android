@@ -113,7 +113,7 @@ public class ScheduleActivity extends AbstractActivity {
         mOutRight = AnimationUtils.loadAnimation(context, R.anim.slide_out_right);
         
         // grab views for details
-        View detail = findViewById(R.id.detail);
+        final View detail = findViewById(R.id.detail);
         mHeader = findViewById(R.id.detail_header);
         mSpeaker = (TextView) findViewById(R.id.speaker);
         mTitle = (TextView) detail.findViewById(R.id.title);
@@ -134,7 +134,7 @@ public class ScheduleActivity extends AbstractActivity {
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
-                Object item = mAdapter.mFiltered.get(position);
+                final Object item = mAdapter.mFiltered.get(position);
                 if (item instanceof Date) {
                     return;// ignore clicks on the dates
                 }
@@ -155,7 +155,7 @@ public class ScheduleActivity extends AbstractActivity {
         
         mMap.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
-                int id = getResources().getIdentifier("map_"+mEvent.location,"drawable",getPackageName());
+                final int id = getResources().getIdentifier("map_"+mEvent.location,"drawable",getPackageName());
                 mDescription.setVisibility(View.GONE);
                 mBio.setVisibility(View.GONE);
                 // only set&show image if a map image was found
@@ -169,10 +169,10 @@ public class ScheduleActivity extends AbstractActivity {
         mShowBio.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
                 mBio.removeAllViews();
-                Integer[] speaker_ids = mEvent.speaker_ids;
+                final Integer[] speaker_ids = mEvent.speaker_ids;
                 if (speaker_ids != null) {
                     for (int i=0; i<speaker_ids.length; i++) {
-                            View view = loadBioView(speaker_ids[i]);
+                            final View view = loadBioView(speaker_ids[i]);
                             if (view != null) {
                                 if (i>0){
                                     view.setPadding(0, 30, 0, 0);
@@ -193,7 +193,7 @@ public class ScheduleActivity extends AbstractActivity {
              * @return
              */
             private View loadBioView(int sid) {
-                Integer id = new Integer(sid);
+                final Integer id = new Integer(sid);
                 Speaker speaker = null;
                 View view = null;
                 // check memory to see if speaker had already been loaded
@@ -207,51 +207,51 @@ public class ScheduleActivity extends AbstractActivity {
                 
                 // create view
                 if (speaker != null) {
-                    LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    final LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = vi.inflate(R.layout.bio, null);
-                    TextView name = (TextView) view.findViewById(R.id.name);
+                    final TextView name = (TextView) view.findViewById(R.id.name);
                     name.setText(speaker.name);
                     
                     if (speaker.biography != null){
-	                    TextView biography = (TextView) view.findViewById(R.id.biography);
+	                    final TextView biography = (TextView) view.findViewById(R.id.biography);
 	                    biography.setMovementMethod(LinkMovementMethod.getInstance());
 	                    biography.setText(Html.fromHtml(speaker.biography));
                     }
                     
                     String twitter = speaker.twitter;
                     if (twitter != null && twitter != ""  && twitter != "null"){
-                        TextView text = (TextView) view.findViewById(R.id.twitter);
+                        final TextView text = (TextView) view.findViewById(R.id.twitter);
                         text.setText(twitter);
-                        View parent = (View) text.getParent();
+                        final View parent = (View) text.getParent();
                         parent.setVisibility(View.VISIBLE);
                     }
                     
                     String website = speaker.website;
                     if (website != null && website != "" && website != "null"){
-                        TextView text = (TextView) view.findViewById(R.id.website);
+                        final TextView text = (TextView) view.findViewById(R.id.website);
                         text.setText(speaker.website);
-                        View parent = (View) text.getParent();
+                        final View parent = (View) text.getParent();
                         parent.setVisibility(View.VISIBLE);
                     }
                     
                     String blog = speaker.blog;
                     if (blog != null && blog != "" && blog != "null"){
-                        TextView text = (TextView) view.findViewById(R.id.blog);
+                        final TextView text = (TextView) view.findViewById(R.id.blog);
                         text.setText(speaker.blog);
-                        View parent = (View) text.getParent();
+                        final View parent = (View) text.getParent();
                         parent.setVisibility(View.VISIBLE);
                     }
                     
                     if (speaker.affiliation != null){
-                        TextView text = (TextView) view.findViewById(R.id.affiliation);
+                        final TextView text = (TextView) view.findViewById(R.id.affiliation);
                         text.setText(speaker.affiliation);
                     }
                     
                     String identica = speaker.identica;
                     if (identica != null && identica != "" && identica != "null"){
-                        TextView text = (TextView) view.findViewById(R.id.identica);
+                        final TextView text = (TextView) view.findViewById(R.id.identica);
                         text.setText(speaker.identica);
-                        View parent = (View) text.getParent();
+                        final View parent = (View) text.getParent();
                         parent.setVisibility(View.VISIBLE);
                     }
                 }
@@ -263,8 +263,8 @@ public class ScheduleActivity extends AbstractActivity {
         
         mFoursquare.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
-                String url = mapRoomNameToFqUrl((mLocation).getText().toString());
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                final String url = mapRoomNameToFqUrl((mLocation).getText().toString());
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 startActivity(intent);
             }
 
@@ -291,9 +291,9 @@ public class ScheduleActivity extends AbstractActivity {
         
         mShare.setOnClickListener(new OnClickListener() { 
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                 intent.setType("text/plain");
-                Resources r = getApplicationContext().getResources();
+                final Resources r = getApplicationContext().getResources();
                 intent.putExtra(Intent.EXTRA_SUBJECT, r.getString(R.string.share_subject));
                 intent.putExtra(Intent.EXTRA_TEXT, r.getString(R.string.share_text) + mTitle.getText() + r.getString(R.string.share_text2));
                 startActivity(Intent.createChooser(intent, "Share"));
@@ -318,9 +318,9 @@ public class ScheduleActivity extends AbstractActivity {
     }
     
     private void loadDescriptionView(){
-        Event event = mEvent;
-        Track track = mConference.tracks.get(event.track);
-        Location location = mConference.locations.get(event.location);
+        final Event event = mEvent;
+        final Track track = mConference.tracks.get(event.track);
+        final Location location = mConference.locations.get(event.location);
         
     	// create list of speakers from all speaker objects
         
@@ -350,9 +350,9 @@ public class ScheduleActivity extends AbstractActivity {
         mTitle.setText(event.title);
         mTitle.setTextColor(Color.parseColor(track.color_text));
         mLocation.setText(location.name);
-        DateFormat startFormat = new SimpleDateFormat("E, h:mm");
-        DateFormat endFormat = new SimpleDateFormat("h:mm a");
-        String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
+        final DateFormat startFormat = new SimpleDateFormat("E, h:mm");
+        final DateFormat endFormat = new SimpleDateFormat("h:mm a");
+        final String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
         mTime.setText(timeString);
         mTimeLocation.setBackgroundColor(Color.parseColor(track.color_dark));
         if (event.description == null){
@@ -379,9 +379,9 @@ public class ScheduleActivity extends AbstractActivity {
     /* Creates the menu items */
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-        SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
+        final SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
         
-        DateFormat formatter = new SimpleDateFormat("EEEE, MMMM d"); 
+        final DateFormat formatter = new SimpleDateFormat("EEEE, MMMM d"); 
         Date date;
         for (int i=0; i<mDates.length; i++){
             date = mDates[i];
@@ -397,7 +397,7 @@ public class ScheduleActivity extends AbstractActivity {
 
     /* Handles item selections */
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
         switch (id) {
         case MENU_NOW:
             now();
@@ -482,7 +482,7 @@ public class ScheduleActivity extends AbstractActivity {
      */
     public void next() {
         if (!isSameDay(mCurrentDate, mConference.end)) {
-            Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()+1);
+            final Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()+1);
             new SetDayThread(load).start();
         }
     }
@@ -492,7 +492,7 @@ public class ScheduleActivity extends AbstractActivity {
      */
     public void previous() {
         if (!isSameDay(mCurrentDate, mConference.start)) {
-            Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()-1);
+            final Date load = new Date(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDate()-1);
             new SetDayThread(load).start();
         }
     }
@@ -517,7 +517,7 @@ public class ScheduleActivity extends AbstractActivity {
         //XXX set date to a day that is definitely, not now.  
         //    This will cause it to update the list immediately.
         mCurrentDate = new Date(1900, 0, 0);
-        DataService service = getDataService();
+        final DataService service = getDataService();
         mConference  = service.getConference(force);
         mDates = mConference.getDates();
     }
@@ -531,7 +531,7 @@ public class ScheduleActivity extends AbstractActivity {
      * @param force - force reload of data.
      */
     private Event loadEvent(Event partialEvent, boolean force) {
-        DataService service = getDataService();
+        final DataService service = getDataService();
         Event event;
         
         // load detailed info if needed
@@ -569,9 +569,9 @@ public class ScheduleActivity extends AbstractActivity {
         
         switch (id) {
         case DIALOG_ABOUT:
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.about, null);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            final View view = inflater.inflate(R.layout.about, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("About");
             builder.setCancelable(true);
             builder.setView(view);
@@ -579,8 +579,7 @@ public class ScheduleActivity extends AbstractActivity {
             return builder.create();
             
         case DIALOG_LOADING:
-            ProgressDialog progressDialog;
-            progressDialog = new ProgressDialog(this);
+            final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("Loading...");
             progressDialog.setCancelable(true);
@@ -622,7 +621,7 @@ public class ScheduleActivity extends AbstractActivity {
             // Load the data for the requested day, load it from dataservice if needed
             // construct a new date with just year,month,day since keys only have that set
             // XXX adjust for timezone by setting time to noon
-            Date load = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
+            final Date load = new Date(date.getYear(), date.getMonth(), date.getDate(), 12, 0);
             if (mSchedule.containsKey(load) && !force){
                 mItems = mSchedule.get(load).events;
             } else {
@@ -637,12 +636,13 @@ public class ScheduleActivity extends AbstractActivity {
                 }
             }
             
-            List<Event> items = mItems;
-            List<Object> filtered = new ArrayList<Object>();
-            int size = mItems.size();
+            final List<Event> items = mItems;
+            final List<Object> filtered = new ArrayList<Object>();
+            final int size = mItems.size();
             Date currentStart = null;
+            Event event;
             for (int i=0; i<size; i++){
-                Event event = items.get(i);
+                event = items.get(i);
                 if(currentStart == null || event.start.after(currentStart)) {
                     currentStart = event.start;
                     filtered.add(currentStart);
@@ -654,7 +654,7 @@ public class ScheduleActivity extends AbstractActivity {
             mLoadDate = date;
             mHandler.post(new Runnable(){
                 public void run(){
-                    DateFormat formatter = new SimpleDateFormat("E, MMMM d");
+                    final DateFormat formatter = new SimpleDateFormat("E, MMMM d");
                     mDate.setText(formatter.format(mCurrentDate));
                     notifyDataSetChanged();
                     now(mLoadDate);
@@ -668,21 +668,23 @@ public class ScheduleActivity extends AbstractActivity {
          * @param date
          */
         public void now(Date date) {
-            List<Object> filtered = mFiltered;
-            int size = filtered.size();
+            final List<Object> filtered = mFiltered;
+            final int size = filtered.size();
+            Date slot;
+            Event event;
             for (int i=0; i<size; i++){
                 Object item = filtered.get(i);
                 
                 // find either the first session that hasn't ended yet
                 // or the first time marker that hasn't occured yet.
                 if (item instanceof Date ){
-                    Date slot = (Date) item;
+                    slot = (Date) item;
                     if (date.before(slot)) {
                         mEvents.setSelection(i);
                         return;
                     }
                 } else {
-                    Event event = (Event) item;
+                    event = (Event) item;
                     if (event.end.after(date)) {
                         // should display the time marker instead of the
                         // session
@@ -707,32 +709,32 @@ public class ScheduleActivity extends AbstractActivity {
          */
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
-            LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            Object item = mFiltered.get(position);
+            final LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final Object item = mFiltered.get(position);
             
         	if (item instanceof Date) {
-                Date date = (Date)item;
+                final Date date = (Date)item;
                 v = vi.inflate(R.layout.list_slot, null);
-                TextView time = (TextView) v.findViewById(R.id.time);
-                DateFormat formatter = new SimpleDateFormat("h:mm a");
+                final TextView time = (TextView) v.findViewById(R.id.time);
+                final DateFormat formatter = new SimpleDateFormat("h:mm a");
                 time.setText(formatter.format(date));
             } else {
-                Event e = (Event) item;
+                final Event e = (Event) item;
                 v = vi.inflate(R.layout.listevent, null);
                 if (e != null) {
-                    TextView title = (TextView) v.findViewById(R.id.title);
-                    TextView locationView = (TextView) v.findViewById(R.id.location);
+                    final TextView title = (TextView) v.findViewById(R.id.title);
+                    final TextView locationView = (TextView) v.findViewById(R.id.location);
                     if (title != null) {
                         title.setText(e.title);
                     }
                     if (e.location != -1) {
-                        Location location = mConference.locations.get(e.location);
+                        final Location location = mConference.locations.get(e.location);
                         locationView.setText(location.name);
                     }
                     
                     if (e.track != -1) {
-                        TextView track_view = (TextView) v.findViewById(R.id.track);
-                        Track track = mConference.tracks.get(e.track);
+                        final TextView track_view = (TextView) v.findViewById(R.id.track);
+                        final Track track = mConference.tracks.get(e.track);
                         track_view.setTextColor(Color.parseColor(track.color));
                         track_view.setText(track.name);
                     }
@@ -753,9 +755,9 @@ public class ScheduleActivity extends AbstractActivity {
         if (date1 == null || date2 == null) {
             throw new IllegalArgumentException("The date must not be null");
         }
-        Calendar cal1 = Calendar.getInstance();
+        final Calendar cal1 = Calendar.getInstance();
         cal1.setTime(date1);
-        Calendar cal2 = Calendar.getInstance();
+        final Calendar cal2 = Calendar.getInstance();
         cal2.setTime(date2);
         return isSameDay(cal1, cal2);
     }
