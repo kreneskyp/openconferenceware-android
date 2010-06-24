@@ -14,6 +14,16 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 
 import android.content.res.Resources;
 
@@ -21,10 +31,13 @@ import com.google.gson.Gson;
 
 public class DataService
 {
-    private static final String CONFERENCE_URI = "http://doors.osuosl.org:8000/conference/";
-	private static final String SCHEDULE_URI = "http://doors.osuosl.org:8000/sessions_day/";
-    private static final String SPEAKER_URI_BASE = "http://doors.osuosl.org:8000/speaker/";
-    private static final String EVENT_URI_BASE = "http://doors.osuosl.org:8000/session/";
+    private static final String CONFERENCE_URI = "http://hendrix:8000/conference/";
+	private static final String SCHEDULE_URI = "http://hendrix:8000/sessions_day/";
+    private static final String SPEAKER_URI_BASE = "http://hendrix:8000/speaker/";
+    private static final String EVENT_URI_BASE = "http://hendrix:8000/session/";
+    
+    private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+    private static final String ENCODING_GZIP = "gzip";
     
 	// Cache timeouts in milliseconds
 	private static final long SCHEDULE_CACHE_TIMEOUT = 14400000;     // 4 hours
@@ -35,6 +48,10 @@ public class DataService
     private File dataDirectory;
     private Resources resources;
     private String packageName;
+    
+   
+    final DefaultHttpClient client = new DefaultHttpClient(new BasicHttpParams());
+    
     
 	public DataService(File dataDir, Resources resources, String packageName)
 	{
@@ -246,6 +263,11 @@ public class DataService
 			json = sb.toString();
 			if (json != null)
 				obj = gson.fromJson(json, clazz);
+				// cache serialized object to file in thread so it does not
+				// impact speed of rendering the UI.  use the last modified
+				// date of the preloaded file.  This ensures that the app
+				// will detect it as out of date sooner.
+				new WriteThread(file, obj, file.lastModified()).start();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -258,10 +280,6 @@ public class DataService
 				}
 			}
 		}
-		
-		// cache serialized object to file in thread so it does not
-		// impact speed of rendering the UI
-		new WriteThread(file, obj).start();
         
 		return obj;
 	}
@@ -282,15 +300,27 @@ public class DataService
 		StringBuilder sb = new StringBuilder();
 		String json = null;
 		try {
-			// determine whether to open local file or remote file
-			URL url = new URL(uri);
-			URLConnection conn = null;
-
-			conn = url.openConnection(); 
-			conn.setDoInput(true); 
-			conn.setUseCaches(false);
-			is = conn.getInputStream();
-
+			// create and execute GET request
+			final HttpGet request = new HttpGet(uri);
+			request.addHeader(HEADER_ACCEPT_ENCODING, ENCODING_GZIP);
+	        final HttpResponse response = client.execute(request);
+	        final HttpEntity entity = response.getEntity();
+	        
+	        // check headers for gzip compression
+            final Header encoding = entity.getContentEncoding();
+            if (encoding != null) {
+                for (HeaderElement element : encoding.getElements()) {
+                    if (element.getName().equalsIgnoreCase(ENCODING_GZIP)) {
+                        is = new GZIPInputStream(entity.getContent());
+                    }
+                }
+            }
+            
+            // wasn't compressed, open vanilla InputStream
+            if (is == null) {
+            	is = entity.getContent();
+            }
+			
 			// read entire file
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
 			while ((line = br.readLine()) != null) {
