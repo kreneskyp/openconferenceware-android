@@ -352,10 +352,24 @@ public class DataService
 	class WriteThread extends Thread {
 		File file;
 		Object obj;
+		long lastmodified;
+		
+		/**
+		 * 
+		 * @param file
+		 * @param obj - 
+		 * @param lastmodified - date to set lastmodified
+		 */
+		public WriteThread(File file, Object obj, long lastmodified){
+			this.file = file;
+			this.obj = obj;
+			this.lastmodified = lastmodified;
+		}
 		
 		public WriteThread(File file, Object obj){
 			this.file = file;
 			this.obj = obj;
+			lastmodified = -1;
 		}
 		
 		public void run(){
@@ -363,6 +377,10 @@ public class DataService
 			try{
 				out = new ObjectOutputStream(new FileOutputStream(file));
 				out.writeObject(obj);
+				
+				if (lastmodified != -1){
+					file.setLastModified(lastmodified);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
