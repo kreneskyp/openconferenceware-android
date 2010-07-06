@@ -25,7 +25,7 @@
         * contributors - list of contributors.
      ================================================================ -->
     <string name="about">This application ensures you always have the conference schedule right in your pocket.  It downloads the schedule from the conference website, ensuring you always have the latest information.</string>
-    <string name="author">This project was started by Open Source Lab developer, Peter Krenesky, for the OpenSourceBridge conference.  It has been designed for reuse with other conferences as well.\n\nThe Oregon State University Open Source Lab is the home of growing, high-impact open source communities. Its world-class hosting services  enable the Linux operating system, Apache web server, the Drupal content management system and over 50 other leading open source software projects to collaborate with contributors and distribute software to millions of users globally. \n\nhttp://osuosl.org</string>
+    <string name="author">This project was started by Open Source Lab developer, Peter Krenesky, for the OpenSourceBridge conference.  It has been designed for reuse with other conferences.\n\nThe Oregon State University Open Source Lab is the home of growing, high-impact open source communities. Its world-class hosting services  enable the Linux operating system, Apache web server, the Drupal content management system and over 50 other leading open source software projects to collaborate with contributors and distribute software to millions of users globally.</string>
     <string name="label_contributors">Contributors:</string>
     <string name="contributors">Don Park\nSean Sullivan</string>
     
