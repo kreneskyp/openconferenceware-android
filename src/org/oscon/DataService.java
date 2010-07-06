@@ -31,10 +31,10 @@ import com.google.gson.Gson;
 
 public class DataService
 {
-    private static final String CONFERENCE_URI = "http://hendrix:8000/conference/";
-    private static final String SCHEDULE_URI = "http://hendrix:8000/sessions_day/";
-    private static final String SPEAKER_URI_BASE = "http://hendrix:8000/speaker/";
-    private static final String EVENT_URI_BASE = "http://hendrix:8000/session/";
+    private static final String CONFERENCE_URI = "http://oscon-android.osuosl.org/conference/";
+    private static final String SCHEDULE_URI = "http://oscon-android.osuosl.org/sessions_day/";
+    private static final String SPEAKER_URI_BASE = "http://oscon-android.osuosl.org/speaker/";
+    private static final String EVENT_URI_BASE = "http://oscon-android.osuosl.org/session/";
     
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
