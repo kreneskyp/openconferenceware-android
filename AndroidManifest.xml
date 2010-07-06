@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.oscon"
-      android:versionCode="9"
+      android:versionCode="1"
       android:versionName="@string/version">
     <application android:icon="@drawable/icon" 
               android:label="@string/app_name" 
-              android:debuggable="true"
+              android:debuggable="false"
               android:name=".OpenSourceBridgeApplication"
               android:allowClearUserData="true">
         <activity android:name=".LaunchActivity"
