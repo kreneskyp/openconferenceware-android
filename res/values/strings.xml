@@ -2,7 +2,7 @@
 <resources>
     
     <!-- APP general -->
-    <string name="app_name">OSCON - Schedule</string>
+    <string name="app_name">OSCON</string>
     <string name="version">version 1.0</string>
     
     <!-- ================================================================
