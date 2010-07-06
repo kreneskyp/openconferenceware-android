@@ -3,7 +3,7 @@
     
     <!-- APP general -->
     <string name="app_name">OSCON</string>
-    <string name="version">version 1.0</string>
+    <string name="version">1.0</string>
     
     <!-- ================================================================
     conference - values used in the splash page 
