@@ -138,12 +138,8 @@ public class ScheduleActivity extends AbstractActivity {
                 if (item instanceof Date) {
                     return;// ignore clicks on the dates
                 }
-                mEvent = loadEvent((Event) item, false);
-                loadDescriptionView();
-                mFlipper.setInAnimation(mInRight);
-                mFlipper.setOutAnimation(mOutLeft);
-                mFlipper.showNext();
-                mDetail = true;
+                mEvent = (Event) item;
+                new LoadSessionThread().start();
             }
         });
         
@@ -413,8 +409,7 @@ public class ScheduleActivity extends AbstractActivity {
             return true;
         case MENU_REFRESH:
             if (mDetail) {
-                mEvent = loadEvent(mEvent, true);
-                loadDescriptionView();
+            	new LoadSessionThread(true).start();
             } else {
                 new SetDayThread(mCurrentDate, true).start();
             }
@@ -537,6 +532,9 @@ public class ScheduleActivity extends AbstractActivity {
         // load detailed info if needed
         // update both the lists stored in the adapter
         if (!partialEvent.details || force){
+        	mHandler.post(new Runnable(){
+                public void run(){showDialog(DIALOG_LOADING);}
+            });
             event = service.getEvent(partialEvent.id, force);
             if (event == null) {
             	// fall back to partial event if full event could not be loaded
@@ -731,7 +729,7 @@ public class ScheduleActivity extends AbstractActivity {
                         final Location location = mConference.locations.get(e.location);
                         locationView.setText(location.name);
                     }
-                    
+
                     if (e.track != -1) {
                         final TextView track_view = (TextView) v.findViewById(R.id.track);
                         final Track track = mConference.tracks.get(e.track);
@@ -802,6 +800,40 @@ public class ScheduleActivity extends AbstractActivity {
                     loadSchedule(true);
                 }
                 setDay(date, reload);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Thread for loading session details
+     * @author peter
+     *
+     */
+    class LoadSessionThread extends Thread {
+    	boolean reload;
+    	public LoadSessionThread() {
+    		this.reload = false;
+    	}
+    	public LoadSessionThread(boolean reload) {
+    		this.reload = reload;
+    	}
+    	public void run(){
+            try{
+                mEvent = loadEvent(mEvent, reload);
+                mHandler.post(new Runnable(){
+                	public void run(){
+		                loadDescriptionView();
+		                if (!mDetail){
+			                mFlipper.setInAnimation(mInRight);
+			                mFlipper.setOutAnimation(mOutLeft);
+			                mFlipper.showNext();
+			                mDetail = true;
+		                }
+		                removeDialog(DIALOG_LOADING);
+                	}
+                });
             } catch (Exception e){
                 e.printStackTrace();
             }
