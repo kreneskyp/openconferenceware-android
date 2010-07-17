@@ -23,6 +23,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.content.res.Resources;
@@ -49,15 +50,22 @@ public class DataService
     private Resources resources;
     private String packageName;
     
-   
-    final DefaultHttpClient client = new DefaultHttpClient(new BasicHttpParams());
-    
+    DefaultHttpClient client;
     
     public DataService(File dataDir, Resources resources, String packageName)
     {
         this.dataDirectory = dataDir;
         this.resources = resources;
         this.packageName = packageName;
+        
+        HttpParams httpParameters = new BasicHttpParams();
+        // connection timeout
+        int timeoutConnection = 5000;
+        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+        // response timeout
+        int timeoutSocket = 15000;
+        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+        client = new DefaultHttpClient(httpParameters);
     }
     
     /**
